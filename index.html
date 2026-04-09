@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>LearnHub – Modern Learning Management System</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet"/>
+  <link href="css/style.css" rel="stylesheet"/>
+</head>
+<body>
+
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-dark sticky-top">
+  <div class="container">
+    <a class="navbar-brand fw-bold fs-4" href="index.html">Learn<span>Hub</span></a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#nav">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="nav">
+      <ul class="navbar-nav mx-auto gap-1">
+        <li class="nav-item"><a class="nav-link active" href="index.html">Home</a></li>
+        <li class="nav-item"><a class="nav-link" href="courses.html">Courses</a></li>
+        <li class="nav-item"><a class="nav-link" href="#">Instructors</a></li>
+        <li class="nav-item"><a class="nav-link" href="#">Pricing</a></li>
+        <li class="nav-item"><a class="nav-link" href="#">About</a></li>
+      </ul>
+      <div class="d-flex gap-2" id="navActions">
+        <!-- injected by JS -->
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- Hero -->
+<section class="hero">
+  <div class="container">
+    <div class="row align-items-center g-5">
+      <div class="col-lg-6">
+        <div class="hero-badge"><i class="bi bi-stars me-1"></i> #1 Online Learning Platform</div>
+        <h1>Learn Without <span>Limits</span>, Grow Without Boundaries</h1>
+        <p class="mt-3">Access 500+ expert-led courses in tech, design, business & more. Learn at your own pace with lifetime access.</p>
+        <div class="d-flex gap-3 mt-4 flex-wrap">
+          <a href="courses.html" class="btn btn-primary btn-lg px-4">Explore Courses <i class="bi bi-arrow-right ms-1"></i></a>
+          <a href="#" class="btn btn-outline-light btn-lg px-4"><i class="bi bi-play-circle me-1"></i> Watch Demo</a>
+        </div>
+        <div class="hero-stats">
+          <div class="stat"><h3>50K+</h3><p>Active Students</p></div>
+          <div class="stat"><h3>500+</h3><p>Expert Courses</p></div>
+          <div class="stat"><h3>120+</h3><p>Instructors</p></div>
+          <div class="stat"><h3>4.9★</h3><p>Avg Rating</p></div>
+        </div>
+      </div>
+      <div class="col-lg-6 d-none d-lg-block">
+        <div class="hero-img-wrap">
+          <div class="d-flex flex-column gap-3">
+            <div class="d-flex align-items-center gap-3 p-3 rounded-3" style="background:rgba(255,255,255,.08)">
+              <div style="width:48px;height:48px;background:#4f46e5;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.4rem;">🎓</div>
+              <div><div class="text-white fw-semibold">Full Stack Development</div><div class="text-secondary small">120 lessons · 48h</div></div>
+              <div class="ms-auto"><span class="badge bg-success">Enrolled</span></div>
+            </div>
+            <div class="d-flex align-items-center gap-3 p-3 rounded-3" style="background:rgba(255,255,255,.08)">
+              <div style="width:48px;height:48px;background:#0e7490;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.4rem;">🤖</div>
+              <div><div class="text-white fw-semibold">Machine Learning A-Z</div><div class="text-secondary small">95 lessons · 36h</div></div>
+              <div class="ms-auto"><div class="text-warning small">★ 4.9</div></div>
+            </div>
+            <div class="d-flex align-items-center gap-3 p-3 rounded-3" style="background:rgba(255,255,255,.08)">
+              <div style="width:48px;height:48px;background:#7c3aed;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.4rem;">🎨</div>
+              <div><div class="text-white fw-semibold">UI/UX Design Mastery</div><div class="text-secondary small">80 lessons · 28h</div></div>
+              <div class="ms-auto"><div class="text-warning small">★ 4.8</div></div>
+            </div>
+            <div class="p-3 rounded-3" style="background:rgba(79,70,229,.2);border:1px solid rgba(79,70,229,.4)">
+              <div class="d-flex justify-content-between text-white small mb-2"><span>Your Progress</span><span>68%</span></div>
+              <div class="progress"><div class="progress-bar" style="width:68%"></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Trusted By -->
+<section class="py-4 bg-white border-bottom">
+  <div class="container text-center">
+    <p class="text-muted small mb-3">TRUSTED BY LEARNERS FROM</p>
+    <div class="d-flex justify-content-center align-items-center gap-4 flex-wrap opacity-50">
+      <span class="fw-bold fs-5">Google</span>
+      <span class="fw-bold fs-5">Microsoft</span>
+      <span class="fw-bold fs-5">Amazon</span>
+      <span class="fw-bold fs-5">Meta</span>
+      <span class="fw-bold fs-5">Netflix</span>
+      <span class="fw-bold fs-5">Spotify</span>
+    </div>
+  </div>
+</section>
+
+<!-- Features -->
+<section class="py-5 mt-2">
+  <div class="container">
+    <div class="text-center mb-5">
+      <p class="text-primary fw-semibold small text-uppercase">Why LearnHub?</p>
+      <h2 class="section-title">Everything You Need to <span>Succeed</span></h2>
+    </div>
+    <div class="row g-4">
+      <div class="col-md-4">
+        <div class="feature-card">
+          <div class="feature-icon" style="background:#ede9fe;color:#7c3aed"><i class="bi bi-play-circle-fill"></i></div>
+          <h5 class="fw-bold">HD Video Lessons</h5>
+          <p class="text-muted small">Crystal-clear 1080p video content with downloadable resources and subtitles.</p>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="feature-card">
+          <div class="feature-icon" style="background:#dcfce7;color:#16a34a"><i class="bi bi-award-fill"></i></div>
+          <h5 class="fw-bold">Certificates</h5>
+          <p class="text-muted small">Earn industry-recognized certificates upon course completion to boost your career.</p>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="feature-card">
+          <div class="feature-icon" style="background:#fef3c7;color:#d97706"><i class="bi bi-people-fill"></i></div>
+          <h5 class="fw-bold">Live Sessions</h5>
+          <p class="text-muted small">Join live Q&A sessions and interact directly with expert instructors.</p>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="feature-card">
+          <div class="feature-icon" style="background:#dbeafe;color:#2563eb"><i class="bi bi-phone-fill"></i></div>
+          <h5 class="fw-bold">Learn Anywhere</h5>
+          <p class="text-muted small">Access courses on any device — desktop, tablet, or mobile, online or offline.</p>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="feature-card">
+          <div class="feature-icon" style="background:#fce7f3;color:#db2777"><i class="bi bi-graph-up-arrow"></i></div>
+          <h5 class="fw-bold">Progress Tracking</h5>
+          <p class="text-muted small">Visual dashboards to track your learning progress and set personal goals.</p>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="feature-card">
+          <div class="feature-icon" style="background:#e0f2fe;color:#0284c7"><i class="bi bi-chat-dots-fill"></i></div>
+          <h5 class="fw-bold">Community Forum</h5>
+          <p class="text-muted small">Engage with a global community of learners and get peer support 24/7.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Popular Courses -->
+<section class="py-5 bg-white">
+  <div class="container">
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+      <div>
+        <p class="text-primary fw-semibold small text-uppercase mb-1">Top Picks</p>
+        <h2 class="section-title">Popular <span>Courses</span></h2>
+      </div>
+      <a href="courses.html" class="btn btn-outline-primary">View All <i class="bi bi-arrow-right ms-1"></i></a>
+    </div>
+    <div class="row g-4">
+      <!-- Card 1 -->
+      <div class="col-md-6 col-lg-3">
+        <div class="card course-card h-100">
+          <div class="course-thumb" style="background:linear-gradient(135deg,#4f46e5,#7c3aed)">💻</div>
+          <div class="card-body">
+            <span class="badge bg-primary badge-level mb-2">Beginner</span>
+            <h6 class="fw-bold">Full Stack Web Development</h6>
+            <div class="rating-stars mb-1">★★★★★ <span class="text-muted small">(2.4k)</span></div>
+            <div class="course-meta d-flex gap-3 mb-2">
+              <span><i class="bi bi-play-circle"></i> 120 lessons</span>
+              <span><i class="bi bi-clock"></i> 48h</span>
+            </div>
+            <div class="d-flex justify-content-between align-items-center mt-auto">
+              <span class="fw-bold text-primary fs-5">₹1,499</span>
+              <a href="login.html" class="btn btn-sm btn-primary">Enroll</a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Card 2 -->
+      <div class="col-md-6 col-lg-3">
+        <div class="card course-card h-100">
+          <div class="course-thumb" style="background:linear-gradient(135deg,#0e7490,#06b6d4)">🤖</div>
+          <div class="card-body">
+            <span class="badge bg-warning text-dark badge-level mb-2">Intermediate</span>
+            <h6 class="fw-bold">Machine Learning A-Z</h6>
+            <div class="rating-stars mb-1">★★★★★ <span class="text-muted small">(1.8k)</span></div>
+            <div class="course-meta d-flex gap-3 mb-2">
+              <span><i class="bi bi-play-circle"></i> 95 lessons</span>
+              <span><i class="bi bi-clock"></i> 36h</span>
+            </div>
+            <div class="d-flex justify-content-between align-items-center mt-auto">
+              <span class="fw-bold text-primary fs-5">₹1,999</span>
+              <a href="login.html" class="btn btn-sm btn-primary">Enroll</a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Card 3 -->
+      <div class="col-md-6 col-lg-3">
+        <div class="card course-card h-100">
+          <div class="course-thumb" style="background:linear-gradient(135deg,#7c3aed,#db2777)">🎨</div>
+          <div class="card-body">
+            <span class="badge bg-success badge-level mb-2">All Levels</span>
+            <h6 class="fw-bold">UI/UX Design Mastery</h6>
+            <div class="rating-stars mb-1">★★★★☆ <span class="text-muted small">(1.2k)</span></div>
+            <div class="course-meta d-flex gap-3 mb-2">
+              <span><i class="bi bi-play-circle"></i> 80 lessons</span>
+              <span><i class="bi bi-clock"></i> 28h</span>
+            </div>
+            <div class="d-flex justify-content-between align-items-center mt-auto">
+              <span class="fw-bold text-primary fs-5">₹1,299</span>
+              <a href="login.html" class="btn btn-sm btn-primary">Enroll</a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Card 4 -->
+      <div class="col-md-6 col-lg-3">
+        <div class="card course-card h-100">
+          <div class="course-thumb" style="background:linear-gradient(135deg,#d97706,#f59e0b)">☁️</div>
+          <div class="card-body">
+            <span class="badge bg-danger badge-level mb-2">Advanced</span>
+            <h6 class="fw-bold">AWS Cloud Practitioner</h6>
+            <div class="rating-stars mb-1">★★★★★ <span class="text-muted small">(980)</span></div>
+            <div class="course-meta d-flex gap-3 mb-2">
+              <span><i class="bi bi-play-circle"></i> 65 lessons</span>
+              <span><i class="bi bi-clock"></i> 22h</span>
+            </div>
+            <div class="d-flex justify-content-between align-items-center mt-auto">
+              <span class="fw-bold text-primary fs-5">₹2,499</span>
+              <a href="login.html" class="btn btn-sm btn-primary">Enroll</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Testimonials -->
+<section class="py-5">
+  <div class="container">
+    <div class="text-center mb-5">
+      <p class="text-primary fw-semibold small text-uppercase">Student Stories</p>
+      <h2 class="section-title">What Our <span>Learners</span> Say</h2>
+    </div>
+    <div class="row g-4">
+      <div class="col-md-4">
+        <div class="testimonial-card">
+          <div class="rating-stars mb-2">★★★★★</div>
+          <p class="text-muted small">"LearnHub completely transformed my career. I went from zero coding knowledge to landing a full-stack developer job in 6 months!"</p>
+          <div class="d-flex align-items-center gap-3 mt-3">
+            <div class="avatar" style="background:#4f46e5">R</div>
+            <div><div class="fw-semibold small">Rahul Sharma</div><div class="text-muted" style="font-size:.75rem">Full Stack Developer @ TCS</div></div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="testimonial-card">
+          <div class="rating-stars mb-2">★★★★★</div>
+          <p class="text-muted small">"The ML course was incredibly detailed. The instructor explains complex concepts in a very simple and practical way."</p>
+          <div class="d-flex align-items-center gap-3 mt-3">
+            <div class="avatar" style="background:#0e7490">P</div>
+            <div><div class="fw-semibold small">Priya Patel</div><div class="text-muted" style="font-size:.75rem">Data Scientist @ Infosys</div></div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="testimonial-card">
+          <div class="rating-stars mb-2">★★★★★</div>
+          <p class="text-muted small">"Best investment I've made. The certificate helped me get a 40% salary hike. Highly recommend LearnHub to everyone!"</p>
+          <div class="d-flex align-items-center gap-3 mt-3">
+            <div class="avatar" style="background:#7c3aed">A</div>
+            <div><div class="fw-semibold small">Arjun Mehta</div><div class="text-muted" style="font-size:.75rem">Cloud Architect @ Wipro</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="py-5" style="background:linear-gradient(135deg,#4f46e5,#0e7490)">
+  <div class="container text-center text-white">
+    <h2 class="fw-bold fs-1 mb-3">Ready to Start Learning?</h2>
+    <p class="mb-4 opacity-75">Join 50,000+ students already learning on LearnHub. First 7 days free.</p>
+    <a href="login.html" class="btn btn-light btn-lg px-5 fw-semibold text-primary">Start Free Trial <i class="bi bi-arrow-right ms-1"></i></a>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer class="py-5">
+  <div class="container">
+    <div class="row g-4">
+      <div class="col-lg-4">
+        <div class="brand mb-3">Learn<span>Hub</span></div>
+        <p class="small">Empowering learners worldwide with quality education and industry-relevant skills.</p>
+        <div class="d-flex gap-3 mt-3">
+          <a href="#"><i class="bi bi-twitter-x fs-5"></i></a>
+          <a href="#"><i class="bi bi-linkedin fs-5"></i></a>
+          <a href="#"><i class="bi bi-youtube fs-5"></i></a>
+          <a href="#"><i class="bi bi-instagram fs-5"></i></a>
+        </div>
+      </div>
+      <div class="col-6 col-lg-2">
+        <h6 class="text-white fw-semibold mb-3">Courses</h6>
+        <ul class="list-unstyled small">
+          <li class="mb-2"><a href="#">Web Development</a></li>
+          <li class="mb-2"><a href="#">Data Science</a></li>
+          <li class="mb-2"><a href="#">UI/UX Design</a></li>
+          <li class="mb-2"><a href="#">Cloud Computing</a></li>
+        </ul>
+      </div>
+      <div class="col-6 col-lg-2">
+        <h6 class="text-white fw-semibold mb-3">Company</h6>
+        <ul class="list-unstyled small">
+          <li class="mb-2"><a href="#">About Us</a></li>
+          <li class="mb-2"><a href="#">Careers</a></li>
+          <li class="mb-2"><a href="#">Blog</a></li>
+          <li class="mb-2"><a href="#">Press</a></li>
+        </ul>
+      </div>
+      <div class="col-6 col-lg-2">
+        <h6 class="text-white fw-semibold mb-3">Support</h6>
+        <ul class="list-unstyled small">
+          <li class="mb-2"><a href="#">Help Center</a></li>
+          <li class="mb-2"><a href="#">Contact Us</a></li>
+          <li class="mb-2"><a href="#">Privacy Policy</a></li>
+          <li class="mb-2"><a href="#">Terms</a></li>
+        </ul>
+      </div>
+      <div class="col-6 col-lg-2">
+        <h6 class="text-white fw-semibold mb-3">Contact</h6>
+        <ul class="list-unstyled small">
+          <li class="mb-2"><i class="bi bi-envelope me-2"></i>hello@learnhub.in</li>
+          <li class="mb-2"><i class="bi bi-telephone me-2"></i>+91 98765 43210</li>
+          <li class="mb-2"><i class="bi bi-geo-alt me-2"></i>Jaipur, Rajasthan</li>
+        </ul>
+      </div>
+    </div>
+    <hr class="border-secondary mt-4"/>
+    <div class="text-center small">© 2025 LearnHub. All rights reserved. Built with ❤️ for learners.</div>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="js/api.js"></script>
+<script>
+  const nav = document.getElementById('navActions');
+  if (getToken()) {
+    const user = getUser();
+    nav.innerHTML = `
+      <a href="dashboard.html" class="btn btn-outline-light btn-sm px-3">
+        <i class="bi bi-grid me-1"></i>Dashboard
+      </a>
+      <button onclick="logout()" class="btn btn-danger btn-sm px-3">
+        <i class="bi bi-box-arrow-right me-1"></i>Logout
+      </button>`;
+  } else {
+    nav.innerHTML = `
+      <a href="login.html" class="btn btn-outline-light btn-sm px-3">Login</a>
+      <a href="login.html" class="btn btn-primary btn-sm px-3">Get Started</a>`;
+  }
+</script>
+</body>
+</html>

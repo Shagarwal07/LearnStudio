@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Course – LearnHub</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet"/>
+  <link href="css/style.css" rel="stylesheet"/>
+</head>
+<body>
+
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-dark sticky-top">
+  <div class="container">
+    <a class="navbar-brand fw-bold fs-4" href="index.html">Learn<span>Hub</span></a>
+    <div class="d-flex gap-2 ms-auto" id="navActions">
+      <a href="dashboard.html" class="btn btn-outline-light btn-sm">Dashboard</a>
+      <!-- Login btn injected by JS only when not logged in -->
+    </div>
+  </div>
+</nav>
+
+<!-- Course Hero -->
+<div class="course-hero">
+  <div class="container">
+    <nav aria-label="breadcrumb" class="mb-3">
+      <ol class="breadcrumb mb-0">
+        <li class="breadcrumb-item"><a href="courses.html" class="text-secondary text-decoration-none">Courses</a></li>
+        <li class="breadcrumb-item active text-white" id="breadcrumb-title">Loading...</li>
+      </ol>
+    </nav>
+
+    <div class="row align-items-start g-4 mt-1">
+      <!-- Left: course info -->
+      <div class="col-lg-7">
+        <span class="badge bg-primary mb-2">Bestseller</span>
+        <h1 class="fw-bold fs-2 lh-sm" id="course-hero-title">Loading...</h1>
+        <p class="text-secondary mt-2 mb-3" id="course-description">—</p>
+
+        <div class="d-flex align-items-center gap-2 flex-wrap mb-2">
+          <span class="rating-stars">★★★★★</span>
+          <span class="text-secondary small">4.9 · 18,500 students</span>
+          <span class="badge bg-secondary" id="course-level-badge">—</span>
+        </div>
+
+        <div class="d-flex gap-3 flex-wrap text-secondary small">
+          <span><i class="bi bi-person-fill me-1"></i>Instructor:
+            <strong class="text-white" id="instructor-name">Loading...</strong>
+          </span>
+          <span><i class="bi bi-book me-1"></i><span id="total-lessons-hero">—</span> lessons</span>
+        </div>
+      </div>
+
+      <!-- Right: enroll card (desktop) -->
+      <div class="col-lg-5 d-none d-lg-block">
+        <div class="cd-enroll-card">
+          <div class="video-placeholder mb-3">
+            <i class="bi bi-play-circle-fill"></i>
+          </div>
+          <div class="text-center mb-3">
+            <span class="fw-bold fs-3 text-primary" id="course-price-hero">—</span>
+          </div>
+          <div class="d-grid gap-2" id="hero-enroll-area">
+            <button class="btn btn-primary btn-lg fw-semibold" id="heroEnrollBtn">Enroll Now</button>
+          </div>
+          <ul class="list-unstyled small mt-3 mb-0">
+            <li class="mb-2"><i class="bi bi-infinity text-primary me-2"></i>Full lifetime access</li>
+            <li class="mb-2"><i class="bi bi-phone text-primary me-2"></i>Access on mobile & desktop</li>
+            <li class="mb-2"><i class="bi bi-award text-primary me-2"></i>Certificate of completion</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Mobile enroll bar -->
+<div class="d-lg-none bg-white border-bottom px-3 py-2 d-flex align-items-center justify-content-between gap-2 sticky-top" style="top:56px;z-index:99">
+  <span class="fw-bold text-primary fs-5" id="course-price-mobile">—</span>
+  <button class="btn btn-primary btn-sm fw-semibold px-4" id="mobileEnrollBtn">Enroll Now</button>
+</div>
+
+<!-- Main Content -->
+<div class="container py-4">
+  <div class="row g-4">
+
+    <!-- Left column -->
+    <div class="col-lg-8">
+
+      <!-- Curriculum -->
+      <div class="bg-white rounded-3 p-3 p-md-4 shadow-sm mb-4">
+        <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+          <h5 class="fw-bold mb-0">Course Curriculum</h5>
+          <span class="text-muted small" id="progress-text">Loading...</span>
+        </div>
+
+        <!-- Progress bar -->
+        <div class="mb-3">
+          <div class="progress" style="height:6px">
+            <div class="progress-bar" id="progress-bar" role="progressbar" style="width:0%"></div>
+          </div>
+        </div>
+
+        <div class="alert alert-primary border-0 py-2 px-3 small mb-3">
+          <i class="bi bi-info-circle me-1"></i>
+          Click an unlocked lesson, then <strong>Complete Lesson</strong> to unlock the next.
+        </div>
+
+        <!-- Player -->
+        <div id="lesson-player" class="cd-player mb-3">
+          <div class="d-flex justify-content-between align-items-start gap-3 flex-wrap">
+            <div class="flex-grow-1 min-w-0">
+              <div id="player-section" class="text-primary small fw-semibold mb-1"></div>
+              <h6 id="player-title" class="fw-bold mb-1 text-truncate">Select a lesson to begin</h6>
+              <div id="player-meta" class="text-muted small"></div>
+            </div>
+            <button id="completeLessonBtn" class="btn btn-success btn-sm fw-semibold flex-shrink-0" disabled>
+              Complete Lesson
+            </button>
+          </div>
+        </div>
+
+        <!-- Lesson list -->
+        <div id="lesson-list">
+          <div class="text-center py-4 text-muted">
+            <div class="spinner-border spinner-border-sm text-primary me-2"></div>Loading lessons...
+          </div>
+        </div>
+      </div>
+
+      <!-- What You'll Learn -->
+      <div class="bg-white rounded-3 p-3 p-md-4 shadow-sm mb-4">
+        <h5 class="fw-bold mb-3">What You'll Learn</h5>
+        <div class="row g-2" id="learn-list">
+          <div class="col-md-6"><div class="d-flex gap-2 small"><i class="bi bi-check-circle-fill text-success mt-1 flex-shrink-0"></i><span>Build full-stack web apps from scratch</span></div></div>
+          <div class="col-md-6"><div class="d-flex gap-2 small"><i class="bi bi-check-circle-fill text-success mt-1 flex-shrink-0"></i><span>Master React.js with Hooks & Redux</span></div></div>
+          <div class="col-md-6"><div class="d-flex gap-2 small"><i class="bi bi-check-circle-fill text-success mt-1 flex-shrink-0"></i><span>Build REST APIs with Node.js & Express</span></div></div>
+          <div class="col-md-6"><div class="d-flex gap-2 small"><i class="bi bi-check-circle-fill text-success mt-1 flex-shrink-0"></i><span>Deploy apps to AWS & Vercel</span></div></div>
+          <div class="col-md-6"><div class="d-flex gap-2 small"><i class="bi bi-check-circle-fill text-success mt-1 flex-shrink-0"></i><span>Implement JWT Authentication</span></div></div>
+          <div class="col-md-6"><div class="d-flex gap-2 small"><i class="bi bi-check-circle-fill text-success mt-1 flex-shrink-0"></i><span>Write clean, maintainable code</span></div></div>
+        </div>
+      </div>
+
+      <!-- Reviews -->
+      <div class="bg-white rounded-3 p-3 p-md-4 shadow-sm">
+        <h5 class="fw-bold mb-3">Student Reviews</h5>
+        <div class="row align-items-center mb-4 g-3">
+          <div class="col-4 col-md-3 text-center">
+            <div style="font-size:2.8rem;font-weight:800;color:#f59e0b;line-height:1">4.9</div>
+            <div class="rating-stars">★★★★★</div>
+            <div class="text-muted" style="font-size:.72rem">Course Rating</div>
+          </div>
+          <div class="col-8 col-md-9">
+            <div class="d-flex align-items-center gap-2 mb-1">
+              <div class="progress flex-grow-1" style="height:7px"><div class="progress-bar bg-warning" style="width:78%"></div></div>
+              <span class="text-warning" style="font-size:.75rem">★★★★★</span><span class="text-muted" style="font-size:.72rem;width:28px">78%</span>
+            </div>
+            <div class="d-flex align-items-center gap-2 mb-1">
+              <div class="progress flex-grow-1" style="height:7px"><div class="progress-bar bg-warning" style="width:15%"></div></div>
+              <span class="text-warning" style="font-size:.75rem">★★★★☆</span><span class="text-muted" style="font-size:.72rem;width:28px">15%</span>
+            </div>
+            <div class="d-flex align-items-center gap-2 mb-1">
+              <div class="progress flex-grow-1" style="height:7px"><div class="progress-bar bg-warning" style="width:5%"></div></div>
+              <span class="text-warning" style="font-size:.75rem">★★★☆☆</span><span class="text-muted" style="font-size:.72rem;width:28px">5%</span>
+            </div>
+            <div class="d-flex align-items-center gap-2">
+              <div class="progress flex-grow-1" style="height:7px"><div class="progress-bar bg-warning" style="width:2%"></div></div>
+              <span class="text-warning" style="font-size:.75rem">★★☆☆☆</span><span class="text-muted" style="font-size:.72rem;width:28px">2%</span>
+            </div>
+          </div>
+        </div>
+        <div class="d-flex flex-column gap-3">
+          <div class="d-flex gap-3">
+            <div class="review-avatar" style="background:#4f46e5">A</div>
+            <div>
+              <div class="d-flex align-items-center gap-2 flex-wrap">
+                <span class="fw-semibold small">Ananya Gupta</span>
+                <span class="rating-stars" style="font-size:.8rem">★★★★★</span>
+                <span class="text-muted" style="font-size:.72rem">2 weeks ago</span>
+              </div>
+              <p class="small text-muted mt-1 mb-0">"Absolutely the best course I've taken! Built my first full-stack app within 2 months."</p>
+            </div>
+          </div>
+          <div class="d-flex gap-3">
+            <div class="review-avatar" style="background:#0e7490">K</div>
+            <div>
+              <div class="d-flex align-items-center gap-2 flex-wrap">
+                <span class="fw-semibold small">Karan Verma</span>
+                <span class="rating-stars" style="font-size:.8rem">★★★★★</span>
+                <span class="text-muted" style="font-size:.72rem">1 month ago</span>
+              </div>
+              <p class="small text-muted mt-1 mb-0">"Got a job offer after completing this course. Worth every rupee!"</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right column: Instructor card (desktop sticky) -->
+    <div class="col-lg-4 d-none d-lg-block">
+      <div class="bg-white rounded-3 p-4 shadow-sm sticky-top" style="top:80px">
+        <h6 class="fw-bold mb-3">Your Instructor</h6>
+        <div class="text-center mb-3">
+          <div class="instructor-avatar mx-auto" id="instructor-avatar">?</div>
+          <h6 class="fw-bold mt-2 mb-0" id="instructor-name-card">Loading...</h6>
+          <p class="text-muted small mb-2" id="instructor-role">Instructor</p>
+        </div>
+        <hr class="my-3"/>
+        <h6 class="fw-bold mb-2">Course Includes</h6>
+        <ul class="list-unstyled small mb-3">
+          <li class="mb-2 d-flex gap-2"><i class="bi bi-play-circle text-primary"></i><span id="includes-lessons">— lessons</span></li>
+          <li class="mb-2 d-flex gap-2"><i class="bi bi-infinity text-primary"></i>Full lifetime access</li>
+          <li class="mb-2 d-flex gap-2"><i class="bi bi-phone text-primary"></i>Mobile & desktop access</li>
+          <li class="mb-2 d-flex gap-2"><i class="bi bi-award text-primary"></i>Certificate of completion</li>
+        </ul>
+        <div class="d-grid">
+          <a href="dashboard.html" class="btn btn-outline-primary btn-sm fw-semibold">Go to Dashboard</a>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="js/api.js"></script>
+<script>
+'use strict';
+
+requireAuth();
+
+const courseId = new URLSearchParams(window.location.search).get('id') || '1';
+let _lessons = [];
+let _active  = null;
+
+// ── Navbar: hide Login if already logged in ──────────────
+if (!getToken()) {
+  document.getElementById('navActions').insertAdjacentHTML('beforeend',
+    '<a href="login.html" class="btn btn-primary btn-sm">Login</a>');
+}
+
+// ── DOM refs ─────────────────────────────────────────────
+const playerSection = document.getElementById('player-section');
+const playerTitle   = document.getElementById('player-title');
+const playerMeta    = document.getElementById('player-meta');
+const completeBtn   = document.getElementById('completeLessonBtn');
+const lessonList    = document.getElementById('lesson-list');
+const progressText  = document.getElementById('progress-text');
+const progressBar   = document.getElementById('progress-bar');
+
+function updatePlayer(lesson) {
+  _active = lesson;
+  playerSection.textContent = `Lesson ${lesson.position}`;
+  playerTitle.textContent   = lesson.title;
+  playerMeta.textContent    = lesson.duration || '';
+  completeBtn.disabled      = lesson.completed;
+  completeBtn.textContent   = lesson.completed ? '✓ Completed' : 'Complete Lesson';
+}
+
+function renderLessons(lessons) {
+  lessonList.innerHTML = lessons.map((l, i) => {
+    const stateClass = l.completed ? 'done' : l.unlocked ? 'unlocked' : 'locked';
+    const isActive   = _active && _active.id === l.id;
+    const numHtml    = l.completed
+      ? `<div class="lesson-num done"><i class="bi bi-check"></i></div>`
+      : `<div class="lesson-num">${i + 1}</div>`;
+    const icon = l.completed
+      ? `<i class="lesson-status-icon bi bi-check-circle-fill text-success"></i>`
+      : l.unlocked
+        ? `<i class="lesson-status-icon bi bi-play-circle text-primary"></i>`
+        : `<i class="lesson-status-icon bi bi-lock text-muted"></i>`;
+    return `
+      <div class="lesson-item ${stateClass}${isActive ? ' active' : ''}" onclick="selectLesson(${l.id})">
+        ${numHtml}
+        <div class="flex-grow-1 min-w-0">
+          <div class="small fw-semibold text-truncate">${l.title}</div>
+          <div class="text-muted" style="font-size:.72rem">${l.duration || ''}</div>
+        </div>
+        ${icon}
+      </div>`;
+  }).join('');
+}
+
+function selectLesson(id) {
+  const l = _lessons.find(x => x.id === id);
+  if (!l || !l.unlocked) return;
+  updatePlayer(l);
+  renderLessons(_lessons);
+}
+
+function setProgress(completed, total, pct) {
+  progressText.textContent = `${completed}/${total} lessons · ${pct}%`;
+  progressBar.style.width  = pct + '%';
+  progressBar.className    = 'progress-bar ' + (pct >= 100 ? 'bg-success' : pct > 0 ? '' : 'bg-secondary');
+}
+
+async function loadCourseAndProgress() {
+  try {
+    // Load course info (instructor name from DB) + progress in parallel
+    const [course, progressData] = await Promise.all([
+      apiGetCourse(courseId),
+      apiGetCourseProgress(courseId)
+    ]);
+
+    // Hero
+    const title = course.title || progressData.courseTitle;
+    document.getElementById('course-hero-title').textContent = title;
+    document.getElementById('breadcrumb-title').textContent  = title;
+    document.title = title + ' – LearnHub';
+    document.getElementById('course-description').textContent = course.description || '';
+    document.getElementById('course-level-badge').textContent = course.level || '';
+
+    const price = course.price ? '₹' + Number(course.price).toLocaleString('en-IN') : 'Free';
+    document.getElementById('course-price-hero').textContent   = price;
+    document.getElementById('course-price-mobile').textContent = price;
+
+    // Instructor from DB
+    const instrName = course.instructorName || 'LearnHub Instructor';
+    const instrInitial = instrName.charAt(0).toUpperCase();
+    document.getElementById('instructor-name').textContent      = instrName;
+    document.getElementById('instructor-name-card').textContent = instrName;
+    document.getElementById('instructor-avatar').textContent    = instrInitial;
+
+    // Lesson count
+    const total = progressData.totalLessons;
+    document.getElementById('total-lessons-hero').textContent = total;
+    document.getElementById('includes-lessons').textContent   = total + ' on-demand lessons';
+
+    // Enroll buttons
+    setupEnrollButtons(course.id, price);
+
+    // Progress
+    _lessons = progressData.lessons;
+    setProgress(progressData.completedLessons, total, progressData.progress);
+    const next = _lessons.find(l => l.unlocked && !l.completed) || _lessons[0];
+    if (next) updatePlayer(next);
+    renderLessons(_lessons);
+
+  } catch (err) {
+    lessonList.innerHTML = `<div class="alert alert-warning">Could not load course. Is Spring Boot running?<br><small>${err.message}</small></div>`;
+  }
+}
+
+function setupEnrollButtons(cId, price) {
+  const enrolled = true; // already enrolled (requireAuth + getCourseProgress succeeded)
+  // If getCourseProgress succeeded, user is enrolled — show "Continue Learning"
+  ['heroEnrollBtn', 'mobileEnrollBtn'].forEach(id => {
+    const btn = document.getElementById(id);
+    if (!btn) return;
+    btn.textContent = 'Continue Learning';
+    btn.classList.replace('btn-primary', 'btn-success');
+    btn.onclick = () => document.getElementById('lesson-list').scrollIntoView({ behavior: 'smooth' });
+  });
+}
+
+completeBtn.addEventListener('click', async () => {
+  if (!_active || _active.completed) return;
+  completeBtn.disabled = true;
+  completeBtn.textContent = 'Saving...';
+  try {
+    const data = await apiCompleteLesson(courseId, _active.id);
+    _lessons = data.lessons;
+    setProgress(data.completedLessons, data.totalLessons, data.progress);
+    const next = _lessons.find(l => l.unlocked && !l.completed) || _active;
+    updatePlayer(next);
+    renderLessons(_lessons);
+  } catch (err) {
+    alert('Error: ' + err.message);
+    completeBtn.disabled = false;
+    completeBtn.textContent = 'Complete Lesson';
+  }
+});
+
+loadCourseAndProgress();
+</script>
+</body>
+</html>

@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>AI Assistant – LearnHub</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet"/>
+  <link href="css/style.css" rel="stylesheet"/>
+  <style>
+    .ai-card { background:#fff; border-radius:16px; padding:2rem; box-shadow:0 4px 24px rgba(79,70,229,.10); }
+    .ai-header { background:linear-gradient(135deg,#4f46e5,#0e7490); color:#fff; border-radius:16px; padding:2rem; margin-bottom:2rem; }
+    .chat-bubble { background:#f1f5f9; border-radius:12px; padding:1rem 1.2rem; font-size:.9rem; line-height:1.7; white-space:pre-wrap; }
+    .quiz-box { background:#f8fafc; border-radius:12px; padding:1.2rem; font-size:.88rem; line-height:1.8; white-space:pre-wrap; font-family:monospace; }
+    .feature-tab.active { background:var(--primary) !important; color:#fff !important; }
+    .typing { display:inline-block; }
+    .typing span { display:inline-block; width:8px; height:8px; background:#4f46e5; border-radius:50%; margin:0 2px; animation:bounce .8s infinite; }
+    .typing span:nth-child(2) { animation-delay:.15s; }
+    .typing span:nth-child(3) { animation-delay:.3s; }
+    @keyframes bounce { 0%,80%,100%{transform:translateY(0)} 40%{transform:translateY(-8px)} }
+  </style>
+</head>
+<body>
+
+<!-- Sidebar -->
+<aside class="sidebar" id="sidebar">
+  <div class="brand">Learn<span>Hub</span></div>
+  <nav class="nav flex-column">
+    <a href="dashboard.html" class="nav-link"><i class="bi bi-grid-fill"></i> Dashboard</a>
+    <a href="courses.html"   class="nav-link"><i class="bi bi-play-circle-fill"></i> My Courses</a>
+    <a href="courses.html"   class="nav-link"><i class="bi bi-compass-fill"></i> Explore</a>
+    <a href="ai.html"        class="nav-link active"><i class="bi bi-robot"></i> AI Assistant</a>
+    <a href="#"              class="nav-link"><i class="bi bi-award-fill"></i> Certificates</a>
+    <hr class="border-secondary my-2"/>
+    <a href="#" onclick="logout()" class="nav-link text-danger">
+      <i class="bi bi-box-arrow-left"></i> Logout
+    </a>
+  </nav>
+</aside>
+
+<div class="main-content">
+
+  <!-- Header -->
+  <div class="ai-header">
+    <div class="d-flex align-items-center gap-3">
+      <div style="width:56px;height:56px;background:rgba(255,255,255,.2);border-radius:14px;
+                  display:flex;align-items:center;justify-content:center;font-size:1.8rem">🤖</div>
+      <div>
+        <h4 class="fw-bold mb-1">AI Learning Assistant</h4>
+        <p class="mb-0 opacity-75">Powered by Google Gemini · Doubt Solver · Recommender · Quiz Generator</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Feature Tabs -->
+  <div class="d-flex gap-2 mb-4 flex-wrap">
+    <button class="btn btn-primary feature-tab" onclick="showTab('doubt',this)">
+      <i class="bi bi-chat-dots me-2"></i>Doubt Solver
+    </button>
+    <button class="btn btn-outline-primary feature-tab" onclick="showTab('recommend',this)">
+      <i class="bi bi-stars me-2"></i>Course Recommender
+    </button>
+    <button class="btn btn-outline-primary feature-tab" onclick="showTab('quiz',this)">
+      <i class="bi bi-patch-question me-2"></i>Quiz Generator
+    </button>
+  </div>
+
+  <!-- ── Tab 1: Doubt Solver ── -->
+  <div id="tab-doubt">
+    <div class="ai-card">
+      <h6 class="fw-bold mb-1">🤔 Ask Your Doubt</h6>
+      <p class="text-muted small mb-3">Ask any question about your course — Gemini will answer instantly.</p>
+      <div class="row g-3 mb-3">
+        <div class="col-md-4">
+          <input type="text" class="form-control" id="doubtCourse"
+                 placeholder="Course name (e.g. React.js)"/>
+        </div>
+        <div class="col-md-8">
+          <div class="input-group">
+            <input type="text" class="form-control" id="doubtQuestion"
+                   placeholder="e.g. What is useEffect hook in React?"
+                   onkeydown="if(event.key==='Enter') askDoubt()"/>
+            <button class="btn btn-primary" onclick="askDoubt()" id="doubtBtn">
+              <i class="bi bi-send-fill"></i> Ask
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Answer area -->
+      <div id="doubtAnswer" class="d-none">
+        <div class="d-flex align-items-start gap-3">
+          <div style="width:36px;height:36px;background:#4f46e5;border-radius:50%;
+                      display:flex;align-items:center;justify-content:center;
+                      color:#fff;font-size:1rem;flex-shrink:0">🤖</div>
+          <div class="flex-grow-1">
+            <div class="fw-semibold small text-primary mb-1">Gemini AI</div>
+            <div class="chat-bubble" id="doubtText"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick questions -->
+      <div class="mt-3">
+        <p class="text-muted small mb-2">Quick questions:</p>
+        <div class="d-flex flex-wrap gap-2">
+          <button class="btn btn-sm btn-outline-secondary"
+                  onclick="quickAsk('What is a REST API?','Web Development')">
+            What is a REST API?
+          </button>
+          <button class="btn btn-sm btn-outline-secondary"
+                  onclick="quickAsk('Explain JWT authentication','Spring Boot')">
+            Explain JWT auth
+          </button>
+          <button class="btn btn-sm btn-outline-secondary"
+                  onclick="quickAsk('What is React useState hook?','React.js')">
+            React useState
+          </button>
+          <button class="btn btn-sm btn-outline-secondary"
+                  onclick="quickAsk('What is Docker?','DevOps')">
+            What is Docker?
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Tab 2: Course Recommender ── -->
+  <div id="tab-recommend" class="d-none">
+    <div class="ai-card">
+      <h6 class="fw-bold mb-1">🌟 AI Course Recommender</h6>
+      <p class="text-muted small mb-3">
+        Based on your enrolled courses, Gemini will suggest what to learn next.
+      </p>
+      <div class="d-flex gap-2 mb-3">
+        <button class="btn btn-primary" onclick="getRecommendations()" id="recBtn">
+          <i class="bi bi-stars me-2"></i>Get My Recommendations
+        </button>
+      </div>
+      <div id="recAnswer" class="d-none">
+        <div class="d-flex align-items-start gap-3">
+          <div style="width:36px;height:36px;background:#0e7490;border-radius:50%;
+                      display:flex;align-items:center;justify-content:center;
+                      color:#fff;font-size:1rem;flex-shrink:0">🌟</div>
+          <div class="flex-grow-1">
+            <div class="fw-semibold small text-primary mb-1">Gemini Recommends</div>
+            <div class="chat-bubble" id="recText"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Tab 3: Quiz Generator ── -->
+  <div id="tab-quiz" class="d-none">
+    <div class="ai-card">
+      <h6 class="fw-bold mb-1">📝 AI Quiz Generator</h6>
+      <p class="text-muted small mb-3">
+        Enter any topic and Gemini will generate 5 MCQ questions instantly.
+      </p>
+      <div class="input-group mb-3" style="max-width:500px">
+        <input type="text" class="form-control" id="quizTopic"
+               placeholder="e.g. React Hooks, SQL Joins, Docker..."
+               onkeydown="if(event.key==='Enter') generateQuiz()"/>
+        <button class="btn btn-primary" onclick="generateQuiz()" id="quizBtn">
+          <i class="bi bi-lightning-fill me-1"></i> Generate Quiz
+        </button>
+      </div>
+
+      <!-- Topic shortcuts -->
+      <div class="d-flex flex-wrap gap-2 mb-3">
+        <button class="btn btn-sm btn-outline-secondary" onclick="quickQuiz('React Hooks')">React Hooks</button>
+        <button class="btn btn-sm btn-outline-secondary" onclick="quickQuiz('SQL Joins')">SQL Joins</button>
+        <button class="btn btn-sm btn-outline-secondary" onclick="quickQuiz('Docker basics')">Docker</button>
+        <button class="btn btn-sm btn-outline-secondary" onclick="quickQuiz('Spring Boot REST API')">Spring Boot</button>
+        <button class="btn btn-sm btn-outline-secondary" onclick="quickQuiz('Machine Learning basics')">ML Basics</button>
+      </div>
+
+      <div id="quizAnswer" class="d-none">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <div class="fw-semibold small text-primary">Generated Quiz</div>
+          <button class="btn btn-sm btn-outline-primary" onclick="copyQuiz()">
+            <i class="bi bi-clipboard me-1"></i>Copy
+          </button>
+        </div>
+        <div class="quiz-box" id="quizText"></div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- end main-content -->
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="js/api.js"></script>
+<script>
+  requireAuth();
+
+  // ── Tab switching ──────────────────────────────────────
+  function showTab(name, btn) {
+    ['doubt','recommend','quiz'].forEach(t => {
+      document.getElementById('tab-' + t).classList.add('d-none');
+    });
+    document.querySelectorAll('.feature-tab').forEach(b => {
+      b.classList.remove('btn-primary');
+      b.classList.add('btn-outline-primary');
+    });
+    document.getElementById('tab-' + name).classList.remove('d-none');
+    btn.classList.remove('btn-outline-primary');
+    btn.classList.add('btn-primary');
+  }
+
+  // ── Loading spinner helper ─────────────────────────────
+  function showLoading(elId) {
+    const el = document.getElementById(elId);
+    el.classList.remove('d-none');
+    el.innerHTML = `<div class="typing"><span></span><span></span><span></span></div>`;
+  }
+
+  // ── Feature 1: Doubt Solver ───────────────────────────
+  async function askDoubt() {
+    const question = document.getElementById('doubtQuestion').value.trim();
+    const course   = document.getElementById('doubtCourse').value.trim() || 'Programming';
+    if (!question) { alert('Please enter a question'); return; }
+
+    const btn = document.getElementById('doubtBtn');
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span>';
+    showLoading('doubtAnswer');
+
+    try {
+      const answer = await aiSolveDoubt(question, course);
+      document.getElementById('doubtAnswer').classList.remove('d-none');
+      document.getElementById('doubtAnswer').innerHTML = `
+        <div class="d-flex align-items-start gap-3">
+          <div style="width:36px;height:36px;background:#4f46e5;border-radius:50%;
+                      display:flex;align-items:center;justify-content:center;
+                      color:#fff;font-size:1rem;flex-shrink:0">🤖</div>
+          <div class="flex-grow-1">
+            <div class="fw-semibold small text-primary mb-1">Gemini AI · ${course}</div>
+            <div class="chat-bubble">${answer}</div>
+          </div>
+        </div>`;
+    } catch (e) {
+      document.getElementById('doubtAnswer').innerHTML =
+        `<div class="alert alert-danger small">Failed to get answer. Check your API key.</div>`;
+    }
+    btn.disabled = false;
+    btn.innerHTML = '<i class="bi bi-send-fill"></i> Ask';
+  }
+
+  function quickAsk(q, c) {
+    document.getElementById('doubtQuestion').value = q;
+    document.getElementById('doubtCourse').value   = c;
+    askDoubt();
+  }
+
+  // ── Feature 2: Recommender ────────────────────────────
+  async function getRecommendations() {
+    const btn = document.getElementById('recBtn');
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Thinking...';
+    showLoading('recAnswer');
+
+    try {
+      // Get real enrolled course names from API
+      const enrollments = await apiMyEnrollments();
+      const courseNames = enrollments.map(e => e.courseTitle);
+      const recs = await aiRecommend(courseNames);
+
+      document.getElementById('recAnswer').classList.remove('d-none');
+      document.getElementById('recAnswer').innerHTML = `
+        <div class="d-flex align-items-start gap-3">
+          <div style="width:36px;height:36px;background:#0e7490;border-radius:50%;
+                      display:flex;align-items:center;justify-content:center;
+                      color:#fff;font-size:1rem;flex-shrink:0">🌟</div>
+          <div class="flex-grow-1">
+            <div class="fw-semibold small text-primary mb-1">
+              Based on ${courseNames.length} enrolled course(s)
+            </div>
+            <div class="chat-bubble">${recs}</div>
+          </div>
+        </div>`;
+    } catch (e) {
+      document.getElementById('recAnswer').innerHTML =
+        `<div class="alert alert-danger small">Failed to get recommendations.</div>`;
+    }
+    btn.disabled = false;
+    btn.innerHTML = '<i class="bi bi-stars me-2"></i>Get My Recommendations';
+  }
+
+  // ── Feature 3: Quiz Generator ─────────────────────────
+  async function generateQuiz() {
+    const topic = document.getElementById('quizTopic').value.trim();
+    if (!topic) { alert('Please enter a topic'); return; }
+
+    const btn = document.getElementById('quizBtn');
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Generating...';
+    showLoading('quizAnswer');
+
+    try {
+      const quiz = await aiGenerateQuiz(topic);
+      document.getElementById('quizAnswer').classList.remove('d-none');
+      document.getElementById('quizAnswer').innerHTML = `
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <div class="fw-semibold small text-primary">📝 Quiz: ${topic}</div>
+          <button class="btn btn-sm btn-outline-primary" onclick="copyQuiz()">
+            <i class="bi bi-clipboard me-1"></i>Copy
+          </button>
+        </div>
+        <div class="quiz-box" id="quizText">${quiz}</div>`;
+    } catch (e) {
+      document.getElementById('quizAnswer').innerHTML =
+        `<div class="alert alert-danger small">Failed to generate quiz.</div>`;
+    }
+    btn.disabled = false;
+    btn.innerHTML = '<i class="bi bi-lightning-fill me-1"></i> Generate Quiz';
+  }
+
+  function quickQuiz(topic) {
+    document.getElementById('quizTopic').value = topic;
+    generateQuiz();
+  }
+
+  function copyQuiz() {
+    const text = document.getElementById('quizText')?.textContent;
+    if (text) navigator.clipboard.writeText(text)
+      .then(() => alert('Quiz copied to clipboard!'));
+  }
+</script>
+</body>
+</html>
