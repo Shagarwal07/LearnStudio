@@ -1,4 +1,4 @@
-const API = 'http://localhost:8080/api';
+const API = 'https://learnstudio-production.up.railway.app/api';
 
 // ── Token helpers ─────────────────────────────────────────
 const getToken = () => localStorage.getItem('lms_token');
