@@ -59,19 +59,19 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(List.of(
-            // Local dev
-            "http://localhost:5500",
-            "http://127.0.0.1:5500",
-            "http://localhost:3000",
-            "http://127.0.0.1:3000",
-            // Production
+        // allowedOriginPatterns works with credentials and supports wildcards
+        config.setAllowedOriginPatterns(List.of(
+            "http://localhost:*",
+            "http://127.0.0.1:*",
             "https://learnstudio.netlify.app",
-            "https://learnstudio-production.up.railway.app"
+            "https://*.netlify.app",
+            "https://*.railway.app"
         ));
         config.setAllowedMethods(List.of("GET","POST","PUT","DELETE","OPTIONS","PATCH"));
         config.setAllowedHeaders(List.of("*"));
+        config.setExposedHeaders(List.of("Authorization"));
         config.setAllowCredentials(true);
+        config.setMaxAge(3600L);
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);
         return source;
