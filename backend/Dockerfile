@@ -4,11 +4,11 @@ WORKDIR /app
 COPY pom.xml .
 RUN mvn dependency:go-offline -q
 COPY src ./src
-RUN mvn package -DskipTests -q
+RUN mvn package -DskipTests -q && mv target/lms-backend-1.0.0.jar target/app.jar
 
 # Stage 2: Run
-FROM eclipse-temurin:17-jre-alpine
+FROM eclipse-temurin:17-jre-jammy
 WORKDIR /app
-COPY --from=build /app/target/*.jar app.jar
+COPY --from=build /app/target/app.jar app.jar
 EXPOSE 8080
-ENTRYPOINT ["java", "-jar", "app.jar"]
+CMD java -Dserver.port=${PORT:-8080} -jar app.jar
