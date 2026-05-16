@@ -10,6 +10,8 @@ import com.learnhub.repository.UserRepository;
 import com.learnhub.security.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
 import org.springframework.security.authentication.*;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -29,7 +31,7 @@ public class AuthService {
 
     public AuthResponse register(RegisterRequest request) {
         if (userRepository.existsByEmail(request.getEmail())) {
-            throw new RuntimeException("Email already registered");
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Email already registered");
         }
         User user = User.builder()
                 .name(request.getName())
@@ -58,7 +60,7 @@ public class AuthService {
 
             // LOGIN ONLY — user must already exist in DB
             User user = userRepository.findByEmail(email)
-                    .orElseThrow(() -> new RuntimeException("NOT_REGISTERED"));
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "NOT_REGISTERED"));
 
             String token = jwtUtil.generateToken(user.getEmail());
             return new AuthResponse(token, user.getName(), user.getEmail(), user.getRole().name());
@@ -75,8 +77,12 @@ public class AuthService {
             String email = payload.getEmail();
             String name  = (String) payload.get("name");
 
-            if (userRepository.existsByEmail(email))
-                throw new RuntimeException("Email already registered. Please sign in instead.");
+            if (userRepository.existsByEmail(email)) {
+                // Fallback to login if user already exists
+                User user = userRepository.findByEmail(email).get();
+                String token = jwtUtil.generateToken(user.getEmail());
+                return new AuthResponse(token, user.getName(), user.getEmail(), user.getRole().name());
+            }
 
             User.Role userRole = (role != null && role.equalsIgnoreCase("INSTRUCTOR"))
                     ? User.Role.INSTRUCTOR : User.Role.STUDENT;
@@ -104,7 +110,7 @@ public class AuthService {
                 .setAudience(Collections.singletonList(googleClientId))
                 .build();
         GoogleIdToken idToken = verifier.verify(credential);
-        if (idToken == null) throw new RuntimeException("Invalid Google token");
+        if (idToken == null) throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid Google token");
         return idToken.getPayload();
     }
 }

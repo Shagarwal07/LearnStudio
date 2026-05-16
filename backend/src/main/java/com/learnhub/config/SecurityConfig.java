@@ -48,9 +48,12 @@ public class SecurityConfig {
                         .requestMatchers("/api/health").permitAll()
 
                         .requestMatchers(HttpMethod.GET, "/api/courses/**").permitAll()
+                        
+                        .requestMatchers("/api/enrollments/**").authenticated()
+                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
 
-                        // .anyRequest().authenticated())
-                        .anyRequest().permitAll() )
+                        .anyRequest().authenticated()
+                )
                 .headers(headers -> headers
                         .addHeaderWriter(new StaticHeadersWriter("Cross-Origin-Opener-Policy", "same-origin-allow-popups"))
                 )

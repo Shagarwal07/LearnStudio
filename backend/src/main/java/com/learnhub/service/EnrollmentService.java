@@ -5,6 +5,8 @@ import com.learnhub.dto.LessonProgressDTO;
 import com.learnhub.entity.*;
 import com.learnhub.repository.*;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.stereotype.Service;
 import java.util.*;
@@ -22,17 +24,33 @@ public class EnrollmentService {
     private final LessonRepository lessonRepository;
     private final LessonProgressRepository lessonProgressRepository;
 
-    public Enrollment enroll(String userEmail, Long courseId) {
+    public Map<String, Object> enroll(String userEmail, Long courseId) {
+        if (userEmail == null || userEmail.isBlank()) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User session not found");
+        }
+
         User user = userRepository.findByEmail(userEmail)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
+                
         Course course = courseRepository.findById(courseId)
-                .orElseThrow(() -> new RuntimeException("Course not found"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Course not found"));
 
         if (enrollmentRepository.existsByUserIdAndCourseId(user.getId(), courseId)) {
-            throw new RuntimeException("Already enrolled in this course");
+            return Map.of(
+                "success", true,
+                "message", "You are already enrolled in this course",
+                "courseId", courseId
+            );
         }
-        return enrollmentRepository.save(
-                Enrollment.builder().user(user).course(course).progress(0).build());
+
+        Enrollment enrollment = Enrollment.builder().user(user).course(course).progress(0).build();
+        Enrollment saved = enrollmentRepository.save(enrollment);
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("enrollmentId", saved.getId());
+        response.put("courseTitle", course.getTitle());
+        response.put("message", "Enrollment successful");
+        return response;
     }
 
     public List<Map<String, Object>> getMyEnrollments(String userEmail) {
