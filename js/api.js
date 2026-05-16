@@ -183,6 +183,24 @@ async function apiMyEnrollments() {
   return res.json();
 }
 
+async function apiGetCourseProgress(courseId) {
+  const res = await fetch(`${API}/enrollments/${courseId}`, {
+    method: 'GET',
+    headers: authHeaders()
+  });
+  if (!res.ok) throw new Error('Failed to load progress: ' + res.status);
+  return res.json();
+}
+
+async function apiCompleteLesson(courseId, lessonId) {
+  const res = await fetch(`${API}/enrollments/${courseId}/lessons/${lessonId}/complete`, {
+    method: 'POST',
+    headers: authHeaders()
+  });
+  if (!res.ok) throw new Error('Failed to complete lesson: ' + res.status);
+  return res.json();
+}
+
 // ── AI ───────────────────────────────────────────────────
 async function apiAiSolveDoubt(question, courseName, model = 'gemini') {
   const res = await fetch(`${API}/ai/doubt`, {

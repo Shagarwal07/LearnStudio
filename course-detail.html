@@ -456,14 +456,16 @@ function renderPreviewVideo(url) {
 
 async function loadCourseAndProgress() {
   try {
+    const cid = Number(courseId);
     // 1. Always load general course info
-    const course = await apiGetCourse(courseId);
+    const course = await apiGetCourse(cid);
     
-    // 2. Try to load progress (will fail if not enrolled)
-    let progressData = null;
-    try {
-      progressData = await apiGetCourseProgress(courseId);
-    } catch (e) { console.log("User not enrolled yet"); }
+    // 2. Check enrollment from same API as dashboard
+    const enrollments = await apiMyEnrollments();
+    const isEnrolled = enrollments.some(e => {
+        const enrolledCid = e.course?.id || e.courseId || e.id;
+        return Number(enrolledCid) === cid;
+    });
 
     const title = course.title;
     document.getElementById('course-hero-title').textContent = title;
@@ -487,7 +489,7 @@ async function loadCourseAndProgress() {
     document.getElementById('instructor-name-card').textContent = instrName;
     document.getElementById('instructor-avatar').textContent    = instrName.charAt(0).toUpperCase();
 
-    const totalLessonsCount = course.lessons || (progressData ? progressData.totalLessons : 0);
+    const totalLessonsCount = course.lessons || 0;
     document.getElementById('total-lessons-hero').textContent = totalLessonsCount;
     document.getElementById('detail-level').textContent       = course.level || '—';
     document.getElementById('detail-lessons').textContent     = totalLessonsCount + ' lessons';
@@ -495,16 +497,21 @@ async function loadCourseAndProgress() {
 
     renderPreviewVideo(course.previewVideoUrl);
 
-    if (progressData) {
+    if (isEnrolled) {
       // USER IS ENROLLED
+      console.log("User enrolled");
       setupEnrollButtons(course.id, price, true);
-      _lessons = progressData.lessons;
-      setProgress(progressData.completedLessons, progressData.totalLessons, progressData.progress);
+
+      // Fetch specific progress details (lessons, unlocked status, etc.)
+      const progressData = await apiGetCourseProgress(cid);
+      _lessons = progressData.lessons || [];
+      setProgress(progressData.completedLessons || 0, progressData.totalLessons || 0, progressData.progress || 0);
       const next = _lessons.find(l => l.unlocked && !l.completed) || _lessons[0];
       if (next) updatePlayer(next);
       renderLessons(_lessons);
     } else {
       // USER IS NOT ENROLLED
+      console.log("User not enrolled yet");
       setupEnrollButtons(course.id, price, false);
       setProgress(0, totalLessonsCount, 0);
       // Load a static/locked preview of lessons if possible, or show a message
