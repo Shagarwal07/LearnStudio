@@ -1,0 +1,6 @@
+backend/target/
+backend/.mvn/
+backend/.settings/
+backend/.classpath
+backend/.project
+.git/

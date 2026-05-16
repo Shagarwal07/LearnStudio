@@ -2,8 +2,11 @@
 FROM maven:3.8.5-openjdk-17-slim AS build
 WORKDIR /app
 
-# Copy the backend source and configuration
+# 1. Copy only the pom.xml and download dependencies (cached layer)
 COPY backend/pom.xml ./backend/
+RUN mvn -f backend/pom.xml dependency:go-offline -B
+
+# 2. Copy the rest of the backend source
 COPY backend/src ./backend/src/
 
 # Copy frontend files into the Spring Boot static resources directory
