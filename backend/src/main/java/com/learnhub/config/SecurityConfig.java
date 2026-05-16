@@ -14,6 +14,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.header.writers.StaticHeadersWriter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -27,45 +28,32 @@ public class SecurityConfig {
 
     private final JwtFilter jwtFilter;
 
-    // @Bean
-    // public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-    //     http
-    //             .csrf(csrf -> csrf.disable())
-    //             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-    //             .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-
-    //             .authorizeHttpRequests(auth -> auth
-    //                     .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-
-    //                     // Permit root, all HTML files, and static resource folders
-    //                     .requestMatchers("/", "/index.html", "/*.html").permitAll()
-    //                     .requestMatchers("/css/**", "/js/**", "/assets/**", "/favicon.ico").permitAll()
-                        
-    //                     .requestMatchers("/api/test").permitAll()
-
-    //                     .requestMatchers("/api/auth/**").permitAll()
-    //                     .requestMatchers("/api/health").permitAll()
-
-    //                     .requestMatchers("/api/courses").permitAll()
-    //                     .requestMatchers("/api/courses/**").permitAll()
-
-    //                     .requestMatchers(HttpMethod.GET, "/api/**").permitAll()
-
-    //                     .anyRequest().authenticated())
-    //             .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
-    //     return http.build();
-    // }
     @Bean
-public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-    http
-        .csrf(csrf -> csrf.disable())
-        .cors(cors -> cors.disable())
-        .authorizeHttpRequests(auth -> auth
-            .anyRequest().permitAll()
-        );
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        http
+                .csrf(csrf -> csrf.disable())
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+                .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 
-    return http.build();
-}
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+
+                        // Permit root, all HTML files, and static resource folders
+                        .requestMatchers("/", "/index.html", "/*.html").permitAll()
+                        .requestMatchers("/css/**", "/js/**", "/favicon.ico").permitAll()
+                        
+                        .requestMatchers("/api/test").permitAll()
+
+                        .requestMatchers("/api/auth/**").permitAll()
+                        .requestMatchers("/api/health").permitAll()
+
+                        .requestMatchers("/api/courses").permitAll()
+                        .requestMatchers("/api/courses/**").permitAll()
+
+                        .anyRequest().authenticated())
+                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+        return http.build();
+    }
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -83,7 +71,7 @@ public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         config.setAllowedOrigins(List.of(
                 "http://localhost:5500",
                 "http://127.0.0.1:5500",
-                // "https://learnstudio.netlify.app",
+                "https://learnstudio.netlify.app",
                 "https://learnstudio-1.onrender.com"));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
         config.setAllowedHeaders(List.of("*"));
