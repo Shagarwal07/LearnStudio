@@ -106,10 +106,24 @@ async function apiGoogleRegister(credential, role) {
 }
 
 // ── Courses ──────────────────────────────────────────────
+// async function apiGetCourses(search = '') {
+//   const url = search ? `${API}/courses?search=${search}` : `${API}/courses`;
+//   const res = await fetch(url);
+//   return res.json();
+// }
+
 async function apiGetCourses(search = '') {
-  const url = search ? `${API}/courses?search=${search}` : `${API}/courses`;
+  const url = search
+    ? `${API}/courses?search=${search}`
+    : `${API}/courses`;
+
   const res = await fetch(url);
-  return res.json();
+
+  if (!res.ok) {
+    throw new Error(`HTTP ${res.status}`);
+  }
+
+  return await res.json();
 }
 
 async function apiGetCourse(id) {
