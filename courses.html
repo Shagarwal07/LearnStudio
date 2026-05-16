@@ -33,13 +33,19 @@
 </nav>
 
 <!-- Page Header -->
-<div style="background:linear-gradient(135deg,#0f172a,#1e1b4b);padding:3rem 0;color:#fff">
+<div class="page-header">
   <div class="container">
-    <h1 class="fw-bold">Explore Courses</h1>
-    <p class="text-secondary mb-3">500+ courses across 20+ categories. Find your perfect learning path.</p>
-    <div class="input-group" style="max-width:500px">
-      <span class="input-group-text bg-white border-0"><i class="bi bi-search text-muted"></i></span>
-      <input type="text" class="form-control border-0" placeholder="Search courses, topics, instructors..." id="searchInput" oninput="filterCourses()"/>
+    <div class="row align-items-center">
+      <div class="col-lg-7">
+        <h1 class="fw-bold mb-2">Explore <span>Courses</span></h1>
+        <p class="text-secondary mb-4 mb-lg-0">500+ courses across 20+ categories. Find your perfect learning path.</p>
+      </div>
+      <div class="col-lg-5">
+        <div class="search-box">
+          <i class="bi bi-search"></i>
+          <input type="text" class="form-control" placeholder="Search courses, topics, instructors..." id="searchInput" oninput="filterCourses()"/>
+        </div>
+      </div>
     </div>
   </div>
 </div>
@@ -47,14 +53,14 @@
 <div class="container py-5">
   <div class="row g-4">
     <!-- Filters Sidebar -->
-    <div class="col-lg-3">
-      <div class="bg-white rounded-3 p-4 shadow-sm sticky-top" style="top:80px">
+    <aside class="col-lg-3">
+      <div class="bg-white rounded-4 p-4 shadow-sm sticky-top filter-sidebar">
         <h6 class="fw-bold mb-3">Filters</h6>
 
         <div class="mb-4">
-          <p class="small fw-semibold text-muted text-uppercase mb-2">Category</p>
+          <p class="small fw-bold text-muted text-uppercase mb-2 filter-section-title">Category</p>
           <div class="d-flex flex-column gap-2">
-            <div class="form-check"><input class="form-check-input" type="checkbox" checked onchange="filterCourses()"/><label class="form-check-label small">Web Development</label></div>
+            <div class="form-check"><input class="form-check-input" type="checkbox" onchange="filterCourses()"/><label class="form-check-label small">Web Development</label></div>
             <div class="form-check"><input class="form-check-input" type="checkbox" onchange="filterCourses()"/><label class="form-check-label small">Data Science</label></div>
             <div class="form-check"><input class="form-check-input" type="checkbox" onchange="filterCourses()"/><label class="form-check-label small">UI/UX Design</label></div>
             <div class="form-check"><input class="form-check-input" type="checkbox" onchange="filterCourses()"/><label class="form-check-label small">Cloud Computing</label></div>
@@ -64,7 +70,7 @@
         </div>
 
         <div class="mb-4">
-          <p class="small fw-semibold text-muted text-uppercase mb-2">Level</p>
+          <p class="small fw-bold text-muted text-uppercase mb-2 filter-section-title">Level</p>
           <div class="d-flex flex-column gap-2">
             <div class="form-check"><input class="form-check-input" type="radio" name="level" value="all" checked onchange="filterCourses()"/><label class="form-check-label small">All Levels</label></div>
             <div class="form-check"><input class="form-check-input" type="radio" name="level" value="beginner" onchange="filterCourses()"/><label class="form-check-label small">Beginner</label></div>
@@ -74,28 +80,30 @@
         </div>
 
         <div class="mb-4">
-          <p class="small fw-semibold text-muted text-uppercase mb-2">Price Range</p>
-          <input type="range" class="form-range" min="0" max="5000" value="5000" id="priceRange" oninput="document.getElementById('priceVal').textContent='₹'+this.value"/>
-          <div class="d-flex justify-content-between small text-muted">
-            <span>₹0</span><span id="priceVal">₹5000</span>
+          <p class="small fw-bold text-muted text-uppercase mb-3 filter-section-title">Price Range</p>
+          <input type="range" class="form-range mb-2" min="0" max="5000" value="5000" id="priceRange" oninput="document.getElementById('priceVal').textContent='₹'+this.value; filterCourses();"/>
+          <div class="d-flex justify-content-between small text-muted align-items-center">
+            <span>₹0</span><span id="priceVal" class="price-display fw-bold text-primary">₹5000</span>
           </div>
         </div>
 
         <div class="mb-3">
-          <p class="small fw-semibold text-muted text-uppercase mb-2">Rating</p>
+          <p class="small fw-bold text-muted text-uppercase mb-2 filter-section-title">Rating</p>
           <div class="d-flex flex-column gap-2">
-            <div class="form-check"><input class="form-check-input" type="radio" name="rating" checked/><label class="form-check-label small text-warning">★★★★★ 4.5+</label></div>
-            <div class="form-check"><input class="form-check-input" type="radio" name="rating"/><label class="form-check-label small text-warning">★★★★☆ 4.0+</label></div>
-            <div class="form-check"><input class="form-check-input" type="radio" name="rating"/><label class="form-check-label small text-warning">★★★☆☆ 3.0+</label></div>
+            <div class="form-check"><input class="form-check-input" type="radio" name="rating" checked onchange="filterCourses()"/><label class="form-check-label small">All Ratings</label></div>
+            <div class="form-check"><input class="form-check-input" type="radio" name="rating" onchange="filterCourses()"/><label class="form-check-label small text-warning">★★★★★ 4.5+</label></div>
+            <div class="form-check"><input class="form-check-input" type="radio" name="rating" onchange="filterCourses()"/><label class="form-check-label small text-warning">★★★★☆ 4.0+</label></div>
+            <div class="form-check"><input class="form-check-input" type="radio" name="rating" onchange="filterCourses()"/><label class="form-check-label small text-warning">★★★☆☆ 3.0+</label></div>
           </div>
         </div>
 
-        <button class="btn btn-outline-secondary btn-sm w-100">Reset Filters</button>
+        <button class="btn btn-outline-primary btn-sm w-100 fw-semibold mt-2" onclick="resetFilters()">Reset Filters</button>
+
       </div>
-    </div>
+    </aside>
 
     <!-- Course Grid -->
-    <div class="col-lg-9">
+    <main class="col-lg-9">
       <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
         <p class="text-muted small mb-0">Showing <strong>12</strong> of 500+ courses</p>
         <div class="d-flex gap-2 align-items-center">
@@ -127,7 +135,7 @@
           <li class="page-item"><a class="page-link" href="#">»</a></li>
         </ul>
       </nav>
-    </div>
+    </main>
   </div>
 </div>
 
@@ -135,55 +143,118 @@
 <footer class="py-4 mt-4">
   <div class="container text-center small">
     <span class="brand">Learn<span>Hub</span></span>
-    <span class="ms-3">© 2025 LearnHub. All rights reserved.</span>
+    <span class="ms-3">© 2026 LearnHub. Made with Love <i class="bi bi-heart-fill text-danger"></i></span>
   </div>
 </footer>
+
+<!-- Locked Course Modal -->
+<div class="modal fade" id="lockedModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered" style="max-width:400px">
+    <div class="modal-content border-0 rounded-4 overflow-hidden">
+      <div style="background:linear-gradient(135deg,#1e1b4b,#0f172a);padding:2rem;text-align:center;color:#fff">
+        <div style="font-size:3rem;margin-bottom:.5rem">🔒</div>
+        <h5 class="fw-bold mb-1">Premium Course</h5>
+        <p class="mb-0 opacity-75 small" id="lockedCourseTitle"></p>
+      </div>
+      <div class="p-4 text-center">
+        <div class="d-inline-flex align-items-center gap-2 px-3 py-1 rounded-pill mb-3"
+             style="background:#fef9c3;color:#854d0e;font-size:.8rem;font-weight:600">
+          <i class="bi bi-clock"></i> Coming Soon
+        </div>
+        <h6 class="fw-bold mb-2">This course is paid &amp; under development</h6>
+        <p class="text-muted small mb-4">We're working hard to bring this course to you. It will be available as a premium course soon. Stay tuned!</p>
+        <ul class="list-unstyled text-start small mb-4">
+          <li class="d-flex gap-2 mb-2"><i class="bi bi-check-circle-fill text-success mt-1"></i><span>Full HD video lessons</span></li>
+          <li class="d-flex gap-2 mb-2"><i class="bi bi-check-circle-fill text-success mt-1"></i><span>Hands-on projects &amp; assignments</span></li>
+          <li class="d-flex gap-2"><i class="bi bi-check-circle-fill text-success mt-1"></i><span>Certificate of completion</span></li>
+        </ul>
+        <button class="btn btn-primary w-100 fw-semibold" data-bs-dismiss="modal">Got it!</button>
+      </div>
+    </div>
+  </div>
+</div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="js/api.js"></script>
 <script>
-  // ── Static course data with IDs matching MySQL seed ────
-  // courseId must match what's in your MySQL courses table
-  // After adding courses via API, update these IDs accordingly
   const COURSES = [
-    { id:1, title:'Full Stack Web Development',      bg:'linear-gradient(135deg,#4f46e5,#7c3aed)', icon:'💻', level:'Beginner',    levelCls:'bg-primary',              price:'₹1,499', rating:'★★★★★', reviews:'2.4k', lessons:120, hours:48 },
-    { id:2, title:'Machine Learning A-Z',            bg:'linear-gradient(135deg,#0e7490,#06b6d4)', icon:'🤖', level:'Intermediate', levelCls:'bg-warning text-dark',    price:'₹1,999', rating:'★★★★★', reviews:'1.8k', lessons:95,  hours:36 },
-    { id:3, title:'UI/UX Design Mastery',            bg:'linear-gradient(135deg,#7c3aed,#db2777)', icon:'🎨', level:'All Levels',   levelCls:'bg-success',              price:'₹1,299', rating:'★★★★☆', reviews:'1.2k', lessons:80,  hours:28 },
-    { id:4, title:'AWS Cloud Practitioner',          bg:'linear-gradient(135deg,#d97706,#f59e0b)', icon:'☁️', level:'Advanced',     levelCls:'bg-danger',               price:'₹2,499', rating:'★★★★★', reviews:'980',  lessons:65,  hours:22 },
-    { id:5, title:'Flutter Mobile Development',      bg:'linear-gradient(135deg,#16a34a,#4ade80)', icon:'📱', level:'Beginner',    levelCls:'bg-primary',              price:'₹1,799', rating:'★★★★★', reviews:'760',  lessons:88,  hours:32 },
-    { id:6, title:'Ethical Hacking & Cybersecurity', bg:'linear-gradient(135deg,#dc2626,#f87171)', icon:'🔐', level:'Intermediate', levelCls:'bg-warning text-dark',    price:'₹2,199', rating:'★★★★★', reviews:'1.1k', lessons:72,  hours:30 },
-    { id:7, title:'DevOps with Docker & Kubernetes', bg:'linear-gradient(135deg,#0f172a,#334155)', icon:'🐳', level:'Advanced',     levelCls:'bg-danger',               price:'₹2,799', rating:'★★★★★', reviews:'890',  lessons:90,  hours:40 },
-    { id:8, title:'Data Analytics with Python',      bg:'linear-gradient(135deg,#0284c7,#38bdf8)', icon:'📊', level:'Beginner',    levelCls:'bg-primary',              price:'₹1,399', rating:'★★★★☆', reviews:'1.5k', lessons:75,  hours:26 },
-    { id:9, title:'React.js – The Complete Guide',   bg:'linear-gradient(135deg,#9333ea,#c084fc)', icon:'⚛️', level:'Intermediate', levelCls:'bg-warning text-dark',    price:'₹1,699', rating:'★★★★★', reviews:'2.1k', lessons:110, hours:44 },
+    { id:1, title:'Full Stack Web Development',      bg:'linear-gradient(135deg,#4f46e5,#7c3aed)', icon:'💻', level:'Beginner',     levelCls:'bg-primary',           rating:'★★★★★', numericRating: 5.0, reviews:'2.4k', lessons:120, hours:48, free:true,  price: 0,    category: 'Web Development' },
+    { id:2, title:'Machine Learning A-Z',            bg:'linear-gradient(135deg,#0e7490,#06b6d4)', icon:'🤖', level:'Intermediate', levelCls:'bg-warning text-dark', rating:'★★★★★', numericRating: 5.0, reviews:'1.8k', lessons:95,  hours:36, free:true,  price: 0,    category: 'Data Science' },
+    { id:3, title:'UI/UX Design Mastery',            bg:'linear-gradient(135deg,#7c3aed,#db2777)', icon:'🎨', level:'All Levels',   levelCls:'bg-success',           rating:'★★★★☆', numericRating: 4.0, reviews:'1.2k', lessons:80,  hours:28, free:true,  price: 0,    category: 'UI/UX Design' },
+    { id:4, title:'AWS Cloud Practitioner',          bg:'linear-gradient(135deg,#d97706,#f59e0b)', icon:'☁️', level:'Advanced',     levelCls:'bg-danger',            rating:'★★★★★', numericRating: 5.0, reviews:'980',  lessons:65,  hours:22, free:true,  price: 0,    category: 'Cloud Computing' },
+    { id:5, title:'Flutter Mobile Development',      bg:'linear-gradient(135deg,#16a34a,#4ade80)', icon:'📱', level:'Beginner',     levelCls:'bg-primary',           rating:'★★★★★', numericRating: 5.0, reviews:'760',  lessons:88,  hours:32, free:true,  price: 0,    category: 'Mobile Development' },
+    { id:6, title:'Ethical Hacking & Cybersecurity', bg:'linear-gradient(135deg,#dc2626,#f87171)', icon:'🔐', level:'Intermediate', levelCls:'bg-warning text-dark', rating:'★★★★★', numericRating: 4.8, reviews:'1.1k', lessons:72,  hours:30, free:false, price: 1499, category: 'Cybersecurity' },
+    { id:7, title:'DevOps with Docker & Kubernetes', bg:'linear-gradient(135deg,#0f172a,#334155)', icon:'🐳', level:'Advanced',     levelCls:'bg-danger',            rating:'★★★★★', numericRating: 4.7, reviews:'890',  lessons:90,  hours:40, free:false, price: 1999, category: 'Cloud Computing' },
+    { id:8, title:'Data Analytics with Python',      bg:'linear-gradient(135deg,#0284c7,#38bdf8)', icon:'📊', level:'Beginner',     levelCls:'bg-primary',           rating:'★★★★☆', numericRating: 4.2, reviews:'1.5k', lessons:75,  hours:26, free:false, price: 1299, category: 'Data Science' },
+    { id:9, title:'React.js – The Complete Guide',   bg:'linear-gradient(135deg,#9333ea,#c084fc)', icon:'⚛️', level:'Intermediate', levelCls:'bg-warning text-dark', rating:'★★★★★', numericRating: 4.9, reviews:'2.1k', lessons:110, hours:44, free:false, price: 1799, category: 'Web Development' },
   ];
 
-  // ── Render course cards dynamically ───────────────────
+  // ── Render course cards ────────────────────────────────
   function renderCourses(list) {
     const grid = document.getElementById('courseGrid');
-    grid.innerHTML = list.map(c => `
-      <div class="col-md-6 col-xl-4 course-item">
-        <div class="card course-card h-100">
-          <a href="course-detail.html?id=${c.id}" class="text-decoration-none">
-            <div class="course-thumb" style="background:${c.bg}">${c.icon}</div>
-          </a>
-          <div class="card-body d-flex flex-column">
-            <span class="badge ${c.levelCls} badge-level mb-2 align-self-start">${c.level}</span>
-            <h6 class="fw-bold mb-1">${c.title}</h6>
-            <div class="rating-stars mb-1">${c.rating} <span class="text-muted small">(${c.reviews})</span></div>
-            <div class="course-meta d-flex gap-3 mb-3">
-              <span><i class="bi bi-play-circle"></i> ${c.lessons} lessons</span>
-              <span><i class="bi bi-clock"></i> ${c.hours}h</span>
-            </div>
-            <div class="d-flex justify-content-between align-items-center mt-auto">
-              <span class="fw-bold text-primary fs-5">${c.price}</span>
-              <button class="btn btn-sm btn-primary" id="enroll-btn-${c.id}"
-                      onclick="enrollCourse(${c.id}, '${c.title}', this)">
-                Enroll Now
-              </button>
+    grid.innerHTML = list.map(c => {
+      if (c.free) {
+        return `
+        <div class="col-md-6 col-xl-4 course-item">
+          <div class="card course-card h-100" data-category="${c.category}" data-level="${c.level.toLowerCase()}" data-price="${c.price}" data-rating="${c.numericRating}">
+            <a href="course-detail.html?id=${c.id}" class="text-decoration-none">
+              <div class="course-thumb" style="background:${c.bg}">${c.icon}</div>
+            </a>
+            <div class="card-body d-flex flex-column">
+              <span class="badge ${c.levelCls} badge-level mb-2 align-self-start">${c.level}</span>
+              <h6 class="fw-bold mb-1">${c.title}</h6>
+              <div class="rating-stars mb-1">${c.rating} <span class="text-muted small">(${c.reviews})</span></div>
+              <div class="course-meta d-flex gap-3 mb-3">
+                <span><i class="bi bi-play-circle"></i> ${c.lessons} lessons</span>
+                <span><i class="bi bi-clock"></i> ${c.hours}h</span>
+              </div>
+              <div class="d-flex justify-content-between align-items-center mt-auto">
+                <span class="fw-bold text-success fs-5">Free</span>
+                <button class="btn btn-sm btn-primary" id="enroll-btn-${c.id}"
+                        onclick="enrollCourse(${c.id}, '${c.title}', this)">
+                  Enroll Now
+                </button>
+              </div>
             </div>
           </div>
-        </div>
-      </div>`).join('');
+        </div>`;
+      } else {
+        return `
+        <div class="col-md-6 col-xl-4 course-item">
+          <div class="card course-card h-100" data-category="${c.category}" data-level="${c.level.toLowerCase()}" data-price="${c.price}" data-rating="${c.numericRating}">
+            <div class="text-decoration-none" onclick="showLockedModal('${c.title}')" style="cursor:pointer">
+              <div class="course-thumb position-relative" style="background:${c.bg}">
+                ${c.icon}
+                <div style="position:absolute;inset:0;background:rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;border-radius:0">
+                  <i class="bi bi-lock-fill text-white" style="font-size:2rem"></i>
+                </div>
+              </div>
+            </div>
+            <div class="card-body d-flex flex-column">
+              <span class="badge ${c.levelCls} badge-level mb-2 align-self-start">${c.level}</span>
+              <h6 class="fw-bold mb-1">${c.title}</h6>
+              <div class="rating-stars mb-1">${c.rating} <span class="text-muted small">(${c.reviews})</span></div>
+              <div class="course-meta d-flex gap-3 mb-3">
+                <span><i class="bi bi-play-circle"></i> ${c.lessons} lessons</span>
+                <span><i class="bi bi-clock"></i> ${c.hours}h</span>
+              </div>
+              <div class="d-flex justify-content-between align-items-center mt-auto">
+                <span class="fw-bold text-muted fs-5"><i class="bi bi-lock-fill me-1" style="font-size:.9rem"></i>Paid</span>
+                <button class="btn btn-sm btn-secondary" onclick="showLockedModal('${c.title}')">
+                  <i class="bi bi-lock-fill me-1"></i>Coming Soon
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>`;
+      }
+    }).join('');
+  }
+
+  // ── Locked course modal ────────────────────────────────
+  function showLockedModal(title) {
+    document.getElementById('lockedCourseTitle').textContent = title;
+    new bootstrap.Modal(document.getElementById('lockedModal')).show();
   }
 
   // ── Enroll button click → POST /api/enrollments/{id} ──
@@ -256,11 +327,60 @@
   }
 
   function filterCourses() {
-    const q = document.getElementById('searchInput').value.toLowerCase();
-    document.querySelectorAll('.course-item').forEach(item => {
-      item.style.display = item.textContent.toLowerCase().includes(q) ? '' : 'none';
+    const searchQuery = document.getElementById('searchInput').value.toLowerCase();
+    const activeCategories = Array.from(document.querySelectorAll('.form-check-input[type="checkbox"]:checked'))
+                                  .map(cb => cb.nextElementSibling.textContent.trim());
+    const selectedLevel = document.querySelector('input[name="level"]:checked').value;
+    const maxPrice = parseInt(document.getElementById('priceRange').value);
+    
+    const ratingRadios = document.querySelectorAll('input[name="rating"]');
+    let minRating = 0;
+    ratingRadios.forEach(r => {
+      if(r.checked) {
+        const text = r.nextElementSibling.textContent;
+        if(text.includes('4.5')) minRating = 4.5;
+        else if(text.includes('4.0')) minRating = 4.0;
+        else if(text.includes('3.0')) minRating = 3.0;
+      }
     });
+
+    let visibleCount = 0;
+    document.querySelectorAll('.course-item').forEach(item => {
+      const card = item.querySelector('.course-card');
+      const category = card.dataset.category;
+      const level = card.dataset.level;
+      const price = parseFloat(card.dataset.price);
+      const rating = parseFloat(card.dataset.rating);
+      const title = card.querySelector('h6').textContent.toLowerCase();
+
+      const matchesSearch = title.includes(searchQuery);
+      const matchesCategory = activeCategories.length === 0 || activeCategories.includes(category);
+      const matchesLevel = selectedLevel === 'all' || level.includes(selectedLevel);
+      const matchesPrice = price <= maxPrice;
+      const matchesRating = rating >= minRating;
+
+      if (matchesSearch && matchesCategory && matchesLevel && matchesPrice && matchesRating) {
+        item.style.display = '';
+        visibleCount++;
+      } else {
+        item.style.display = 'none';
+      }
+    });
+
+    document.querySelector('.col-lg-9 p.text-muted strong').textContent = visibleCount;
   }
+
+  function resetFilters() {
+    document.getElementById('searchInput').value = '';
+    document.querySelectorAll('.form-check-input[type="checkbox"]').forEach(cb => cb.checked = false);
+
+    document.querySelector('input[name="level"][value="all"]').checked = true;
+    document.getElementById('priceRange').value = 5000;
+    document.getElementById('priceVal').textContent = '₹5000';
+    document.querySelectorAll('input[name="rating"]')[0].checked = true;
+    filterCourses();
+  }
+
 
   // ── Init ───────────────────────────────────────────────
   if (getToken()) {
@@ -270,8 +390,11 @@
     document.getElementById('navActions').insertAdjacentHTML('beforeend',
       '<a href="login.html" class="btn btn-primary btn-sm px-3">Login</a>');
   }
+
+  // Initial render and filter application
   renderCourses(COURSES);
   markEnrolled();
+  filterCourses(); // Apply initial filters on page load
 </script>
 </body>
 </html>

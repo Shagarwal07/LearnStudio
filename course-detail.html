@@ -21,7 +21,7 @@
   </div>
 </nav>
 
-<!-- Course Hero -->
+
 <div class="course-hero">
   <div class="container">
     <nav aria-label="breadcrumb" class="mb-3">
@@ -34,29 +34,81 @@
     <div class="row align-items-start g-4 mt-1">
       <!-- Left: course info -->
       <div class="col-lg-7">
-        <span class="badge bg-primary mb-2">Bestseller</span>
-        <h1 class="fw-bold fs-2 lh-sm" id="course-hero-title">Loading...</h1>
-        <p class="text-secondary mt-2 mb-3" id="course-description">—</p>
-
-        <div class="d-flex align-items-center gap-2 flex-wrap mb-2">
-          <span class="rating-stars">★★★★★</span>
-          <span class="text-secondary small">4.9 · 18,500 students</span>
-          <span class="badge bg-secondary" id="course-level-badge">—</span>
+        <!-- Tags row -->
+        <div class="d-flex align-items-center gap-2 flex-wrap mb-3">
+          <span class="badge bg-warning text-dark fw-semibold px-3 py-2">🏆 Bestseller</span>
+          <span class="badge bg-success fw-semibold px-3 py-2" id="course-level-badge">—</span>
+          <span class="badge" style="background:rgba(255,255,255,.15);color:#e2e8f0;font-weight:500">
+            <i class="bi bi-clock me-1"></i>Updated Jan 2025
+          </span>
         </div>
 
-        <div class="d-flex gap-3 flex-wrap text-secondary small">
-          <span><i class="bi bi-person-fill me-1"></i>Instructor:
+        <!-- Title -->
+        <h1 class="fw-bold lh-sm mb-2" style="font-size:clamp(1.4rem,3vw,2rem)" id="course-hero-title">Loading...</h1>
+
+        <!-- Description -->
+        <p class="mb-3" style="color:#94a3b8;font-size:.95rem;line-height:1.65" id="course-description">—</p>
+
+        <!-- Rating + students -->
+        <div class="d-flex align-items-center gap-2 flex-wrap mb-3">
+          <span style="color:#f59e0b;font-weight:700;font-size:1rem">4.9</span>
+          <span style="color:#f59e0b;letter-spacing:1px">★★★★★</span>
+          <span style="color:#94a3b8;font-size:.85rem">(18,500 ratings)</span>
+          <span style="color:#94a3b8;font-size:.85rem">·</span>
+          <span style="color:#94a3b8;font-size:.85rem"><i class="bi bi-people-fill me-1"></i>24,300 students</span>
+        </div>
+
+        <!-- Instructor + lessons row -->
+        <div class="d-flex gap-3 flex-wrap mb-4" style="font-size:.88rem;color:#94a3b8">
+          <span><i class="bi bi-person-circle me-1"></i>By
             <strong class="text-white" id="instructor-name">Loading...</strong>
           </span>
-          <span><i class="bi bi-book me-1"></i><span id="total-lessons-hero">—</span> lessons</span>
+          <span><i class="bi bi-play-circle me-1"></i><span id="total-lessons-hero">—</span> lessons</span>
+          <span><i class="bi bi-translate me-1"></i>English / Hindi</span>
+        </div>
+
+        <!-- Quick-stat pills -->
+        <div class="d-flex flex-wrap gap-2 mb-4">
+          <div class="hero-stat-pill"><i class="bi bi-infinity"></i> Lifetime access</div>
+          <div class="hero-stat-pill"><i class="bi bi-phone"></i> Mobile &amp; Desktop</div>
+          <div class="hero-stat-pill"><i class="bi bi-award"></i> Certificate</div>
+          <div class="hero-stat-pill"><i class="bi bi-download"></i> Downloadable resources</div>
+        </div>
+
+        <!-- Certificate Banner -->
+        <div class="cd-cert-banner" onclick="showCertModal()">
+          <div class="cd-cert-glow"></div>
+          <div class="d-flex align-items-center gap-3 position-relative">
+            <div class="cd-cert-icon">
+              <i class="bi bi-patch-check-fill"></i>
+            </div>
+            <div class="flex-grow-1">
+              <div class="fw-bold mb-1" style="font-size:.95rem">Certificate of Completion</div>
+              <div style="font-size:.8rem;opacity:.75">Finish all lessons &amp; earn your verified certificate</div>
+            </div>
+            <div class="d-flex flex-column align-items-end gap-1 flex-shrink-0">
+              <span class="cd-cert-badge">Coming Soon</span>
+              <span style="font-size:.75rem;opacity:.6">Generate &rarr;</span>
+            </div>
+          </div>
         </div>
       </div>
 
       <!-- Right: enroll card (desktop) -->
       <div class="col-lg-5 d-none d-lg-block">
         <div class="cd-enroll-card">
-          <div class="video-placeholder mb-3">
-            <i class="bi bi-play-circle-fill"></i>
+          <!-- Video Preview -->
+          <div class="cd-video-wrap mb-3" id="heroVideoWrap">
+            <div class="cd-video-placeholder">
+              <img src="assests/Course Intro.jpg" alt="Course Preview"
+                   style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:inherit"/>
+              <div class="cd-thumb-overlay">
+                <div class="cd-play-btn">
+                  <i class="bi bi-play-fill"></i>
+                </div>
+                <span class="cd-thumb-hover-label">Preview not available</span>
+              </div>
+            </div>
           </div>
           <div class="text-center mb-3">
             <span class="fw-bold fs-3 text-primary" id="course-price-hero">—</span>
@@ -66,7 +118,7 @@
           </div>
           <ul class="list-unstyled small mt-3 mb-0">
             <li class="mb-2"><i class="bi bi-infinity text-primary me-2"></i>Full lifetime access</li>
-            <li class="mb-2"><i class="bi bi-phone text-primary me-2"></i>Access on mobile & desktop</li>
+            <li class="mb-2"><i class="bi bi-phone text-primary me-2"></i>Access on mobile &amp; desktop</li>
             <li class="mb-2"><i class="bi bi-award text-primary me-2"></i>Certificate of completion</li>
           </ul>
         </div>
@@ -109,6 +161,13 @@
 
         <!-- Player -->
         <div id="lesson-player" class="cd-player mb-3">
+          <!-- Video embed area -->
+          <div id="lesson-video-area" class="mb-3">
+            <div class="lesson-no-video">
+              <i class="bi bi-play-circle" style="font-size:2.5rem;opacity:.3"></i>
+              <span class="small text-muted mt-2">Select a lesson to watch</span>
+            </div>
+          </div>
           <div class="d-flex justify-content-between align-items-start gap-3 flex-wrap">
             <div class="flex-grow-1 min-w-0">
               <div id="player-section" class="text-primary small fw-semibold mb-1"></div>
@@ -197,29 +256,101 @@
       </div>
     </div>
 
-    <!-- Right column: Instructor card (desktop sticky) -->
+    <!-- Right column: Course Details card (desktop sticky) -->
     <div class="col-lg-4 d-none d-lg-block">
-      <div class="bg-white rounded-3 p-4 shadow-sm sticky-top" style="top:80px">
-        <h6 class="fw-bold mb-3">Your Instructor</h6>
-        <div class="text-center mb-3">
-          <div class="instructor-avatar mx-auto" id="instructor-avatar">?</div>
-          <h6 class="fw-bold mt-2 mb-0" id="instructor-name-card">Loading...</h6>
-          <p class="text-muted small mb-2" id="instructor-role">Instructor</p>
+      <div class="sticky-top" style="top:80px">
+
+        <!-- Instructor card -->
+        <div class="bg-white rounded-3 p-4 shadow-sm mb-3">
+          <h6 class="fw-bold mb-3">Your Instructor</h6>
+          <div class="d-flex align-items-center gap-3">
+            <div class="instructor-avatar flex-shrink-0" id="instructor-avatar">?</div>
+            <div>
+              <div class="fw-bold" id="instructor-name-card">Loading...</div>
+              <div class="text-muted small" id="instructor-role">Instructor</div>
+            </div>
+          </div>
         </div>
-        <hr class="my-3"/>
-        <h6 class="fw-bold mb-2">Course Includes</h6>
-        <ul class="list-unstyled small mb-3">
-          <li class="mb-2 d-flex gap-2"><i class="bi bi-play-circle text-primary"></i><span id="includes-lessons">— lessons</span></li>
-          <li class="mb-2 d-flex gap-2"><i class="bi bi-infinity text-primary"></i>Full lifetime access</li>
-          <li class="mb-2 d-flex gap-2"><i class="bi bi-phone text-primary"></i>Mobile & desktop access</li>
-          <li class="mb-2 d-flex gap-2"><i class="bi bi-award text-primary"></i>Certificate of completion</li>
-        </ul>
-        <div class="d-grid">
+
+        <!-- Course details card -->
+        <div class="cd-details-card mb-3">
+          <div class="px-3 py-2 border-bottom" style="background:#f8fafc">
+            <span class="fw-bold small text-uppercase text-muted" style="letter-spacing:.05em">Course Details</span>
+          </div>
+          <div class="cd-detail-row">
+            <i class="bi bi-bar-chart-fill"></i>
+            <span class="label">Level</span>
+            <span class="value" id="detail-level">—</span>
+          </div>
+          <div class="cd-detail-row">
+            <i class="bi bi-play-circle-fill"></i>
+            <span class="label">Lessons</span>
+            <span class="value" id="detail-lessons">—</span>
+          </div>
+          <div class="cd-detail-row">
+            <i class="bi bi-currency-rupee"></i>
+            <span class="label">Price</span>
+            <span class="value" id="detail-price">—</span>
+          </div>
+          <div class="cd-detail-row">
+            <i class="bi bi-infinity"></i>
+            <span class="label">Access</span>
+            <span class="value">Lifetime</span>
+          </div>
+          <div class="cd-detail-row">
+            <i class="bi bi-phone"></i>
+            <span class="label">Devices</span>
+            <span class="value">Mobile &amp; Desktop</span>
+          </div>
+          <div class="cd-detail-row">
+            <i class="bi bi-award-fill"></i>
+            <span class="label">Certificate</span>
+            <span class="value">Yes, on completion</span>
+          </div>
+          <div class="cd-detail-row">
+            <i class="bi bi-translate"></i>
+            <span class="label">Language</span>
+            <span class="value">English / Hindi</span>
+          </div>
+        </div>
+
+        <div class="d-grid gap-2">
           <a href="dashboard.html" class="btn btn-outline-primary btn-sm fw-semibold">Go to Dashboard</a>
         </div>
       </div>
     </div>
 
+  </div>
+</div>
+
+<!-- Certificate Coming Soon Modal -->
+<div class="modal fade" id="certModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered" style="max-width:420px">
+    <div class="modal-content border-0 rounded-4 overflow-hidden">
+      <div style="background:linear-gradient(135deg,#4f46e5,#0e7490);padding:2rem;text-align:center;color:#fff">
+        <div style="font-size:3.5rem;margin-bottom:.5rem">🎓</div>
+        <h5 class="fw-bold mb-1">Certificate of Completion</h5>
+        <p class="mb-0" style="opacity:.8;font-size:.88rem">LearnHub Verified Certificate</p>
+      </div>
+      <div class="p-4 text-center">
+        <div class="d-inline-flex align-items-center gap-2 px-3 py-1 rounded-pill mb-3"
+             style="background:#fef9c3;color:#854d0e;font-size:.8rem;font-weight:600">
+          <i class="bi bi-tools"></i> Under Development
+        </div>
+        <h6 class="fw-bold mb-2">This feature is coming soon!</h6>
+        <p class="text-muted small mb-4">
+          We're building a beautiful certificate generator that will let you download
+          a verified PDF certificate once you complete all lessons in this course.
+        </p>
+        <ul class="list-unstyled text-start small mb-4">
+          <li class="d-flex gap-2 mb-2"><i class="bi bi-check-circle-fill text-success mt-1"></i><span>Personalized with your name &amp; course title</span></li>
+          <li class="d-flex gap-2 mb-2"><i class="bi bi-check-circle-fill text-success mt-1"></i><span>Downloadable as PDF &amp; shareable link</span></li>
+          <li class="d-flex gap-2 mb-2"><i class="bi bi-check-circle-fill text-success mt-1"></i><span>LinkedIn &amp; resume ready format</span></li>
+          <li class="d-flex gap-2"><i class="bi bi-check-circle-fill text-success mt-1"></i><span>Unique verification ID for employers</span></li>
+        </ul>
+        <button class="btn btn-primary w-100 fw-semibold" data-bs-dismiss="modal">Got it, keep learning!</button>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -234,13 +365,11 @@ const courseId = new URLSearchParams(window.location.search).get('id') || '1';
 let _lessons = [];
 let _active  = null;
 
-// ── Navbar: hide Login if already logged in ──────────────
 if (!getToken()) {
   document.getElementById('navActions').insertAdjacentHTML('beforeend',
     '<a href="login.html" class="btn btn-primary btn-sm">Login</a>');
 }
 
-// ── DOM refs ─────────────────────────────────────────────
 const playerSection = document.getElementById('player-section');
 const playerTitle   = document.getElementById('player-title');
 const playerMeta    = document.getElementById('player-meta');
@@ -256,6 +385,26 @@ function updatePlayer(lesson) {
   playerMeta.textContent    = lesson.duration || '';
   completeBtn.disabled      = lesson.completed;
   completeBtn.textContent   = lesson.completed ? '✓ Completed' : 'Complete Lesson';
+
+  const videoArea = document.getElementById('lesson-video-area');
+  if (lesson.videoUrl) {
+    const ytMatch = lesson.videoUrl.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([\w-]{11})/);
+    const videoId = ytMatch ? ytMatch[1] : null;
+    if (videoId) {
+      videoArea.innerHTML = `<div class="lesson-yt-wrap"><iframe
+        src="https://www.youtube.com/embed/${videoId}?rel=0&modestbranding=1"
+        allowfullscreen
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture">
+      </iframe></div>`;
+    } else {
+      videoArea.innerHTML = `<video class="w-100 rounded-3" controls preload="metadata"><source src="${lesson.videoUrl}"></video>`;
+    }
+  } else {
+    videoArea.innerHTML = `<div class="lesson-no-video">
+      <i class="bi bi-play-circle" style="font-size:2.5rem;opacity:.3"></i>
+      <span class="small text-muted mt-2">No video available for this lesson</span>
+    </div>`;
+  }
 }
 
 function renderLessons(lessons) {
@@ -270,15 +419,14 @@ function renderLessons(lessons) {
       : l.unlocked
         ? `<i class="lesson-status-icon bi bi-play-circle text-primary"></i>`
         : `<i class="lesson-status-icon bi bi-lock text-muted"></i>`;
-    return `
-      <div class="lesson-item ${stateClass}${isActive ? ' active' : ''}" onclick="selectLesson(${l.id})">
-        ${numHtml}
-        <div class="flex-grow-1 min-w-0">
-          <div class="small fw-semibold text-truncate">${l.title}</div>
-          <div class="text-muted" style="font-size:.72rem">${l.duration || ''}</div>
-        </div>
-        ${icon}
-      </div>`;
+    return `<div class="lesson-item ${stateClass}${isActive ? ' active' : ''}" onclick="selectLesson(${l.id})">
+      ${numHtml}
+      <div class="flex-grow-1 min-w-0">
+        <div class="small fw-semibold text-truncate">${l.title}</div>
+        <div class="text-muted" style="font-size:.72rem">${l.duration || ''}</div>
+      </div>
+      ${icon}
+    </div>`;
   }).join('');
 }
 
@@ -295,63 +443,116 @@ function setProgress(completed, total, pct) {
   progressBar.className    = 'progress-bar ' + (pct >= 100 ? 'bg-success' : pct > 0 ? '' : 'bg-secondary');
 }
 
+function renderPreviewVideo(url) {
+  const wrap = document.getElementById('heroVideoWrap');
+  if (!url) return;
+  const ytMatch = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([\w-]{11})/);
+  if (ytMatch) {
+    wrap.innerHTML = `<iframe src="https://www.youtube.com/embed/${ytMatch[1]}?rel=0&modestbranding=1"
+      allowfullscreen allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"></iframe>`;
+  } else {
+    wrap.innerHTML = `<video controls preload="metadata"><source src="${url}"></video>`;
+  }
+}
+
 async function loadCourseAndProgress() {
   try {
-    // Load course info (instructor name from DB) + progress in parallel
-    const [course, progressData] = await Promise.all([
-      apiGetCourse(courseId),
-      apiGetCourseProgress(courseId)
-    ]);
+    // 1. Always load general course info
+    const course = await apiGetCourse(courseId);
+    
+    // 2. Try to load progress (will fail if not enrolled)
+    let progressData = null;
+    try {
+      progressData = await apiGetCourseProgress(courseId);
+    } catch (e) { console.log("User not enrolled yet"); }
 
-    // Hero
-    const title = course.title || progressData.courseTitle;
+    const title = course.title;
     document.getElementById('course-hero-title').textContent = title;
     document.getElementById('breadcrumb-title').textContent  = title;
     document.title = title + ' – LearnHub';
     document.getElementById('course-description').textContent = course.description || '';
     document.getElementById('course-level-badge').textContent = course.level || '';
 
-    const price = course.price ? '₹' + Number(course.price).toLocaleString('en-IN') : 'Free';
-    document.getElementById('course-price-hero').textContent   = price;
+    const FREE_COURSES = [1, 2, 3, 4, 5];
+    const isFree = FREE_COURSES.includes(Number(courseId));
+    const price  = isFree ? 'Free' : 'Paid';
+    // const isFree = !course.price || Number(course.price) === 0;
+    // const price  = isFree ? 'Free' : `₹${course.price.toLocaleString('en-IN')}`;
+    const priceEl = document.getElementById('course-price-hero');
+    priceEl.textContent = price;
+    priceEl.className   = isFree ? 'fw-bold fs-3 text-success' : 'fw-bold fs-3 text-muted';
     document.getElementById('course-price-mobile').textContent = price;
 
-    // Instructor from DB
     const instrName = course.instructorName || 'LearnHub Instructor';
-    const instrInitial = instrName.charAt(0).toUpperCase();
     document.getElementById('instructor-name').textContent      = instrName;
     document.getElementById('instructor-name-card').textContent = instrName;
-    document.getElementById('instructor-avatar').textContent    = instrInitial;
+    document.getElementById('instructor-avatar').textContent    = instrName.charAt(0).toUpperCase();
 
-    // Lesson count
-    const total = progressData.totalLessons;
-    document.getElementById('total-lessons-hero').textContent = total;
-    document.getElementById('includes-lessons').textContent   = total + ' on-demand lessons';
+    const totalLessonsCount = course.lessons || (progressData ? progressData.totalLessons : 0);
+    document.getElementById('total-lessons-hero').textContent = totalLessonsCount;
+    document.getElementById('detail-level').textContent       = course.level || '—';
+    document.getElementById('detail-lessons').textContent     = totalLessonsCount + ' lessons';
+    document.getElementById('detail-price').textContent       = price;
 
-    // Enroll buttons
-    setupEnrollButtons(course.id, price);
+    renderPreviewVideo(course.previewVideoUrl);
 
-    // Progress
-    _lessons = progressData.lessons;
-    setProgress(progressData.completedLessons, total, progressData.progress);
-    const next = _lessons.find(l => l.unlocked && !l.completed) || _lessons[0];
-    if (next) updatePlayer(next);
-    renderLessons(_lessons);
+    if (progressData) {
+      // USER IS ENROLLED
+      setupEnrollButtons(course.id, price, true);
+      _lessons = progressData.lessons;
+      setProgress(progressData.completedLessons, progressData.totalLessons, progressData.progress);
+      const next = _lessons.find(l => l.unlocked && !l.completed) || _lessons[0];
+      if (next) updatePlayer(next);
+      renderLessons(_lessons);
+    } else {
+      // USER IS NOT ENROLLED
+      setupEnrollButtons(course.id, price, false);
+      setProgress(0, totalLessonsCount, 0);
+      // Load a static/locked preview of lessons if possible, or show a message
+      lessonList.innerHTML = `<div class="text-center py-4">
+        <i class="bi bi-lock-fill fs-2 text-muted mb-2"></i>
+        <p class="small text-muted">Enroll in this course to access the curriculum and start learning.</p>
+        <button class="btn btn-primary btn-sm px-4" onclick="enrollFromDetail(${course.id}, '${course.title}')">Enroll Now</button>
+      </div>`;
+      
+      // Disable completion button
+      completeBtn.disabled = true;
+      completeBtn.textContent = 'Enroll to Start';
+    }
 
   } catch (err) {
     lessonList.innerHTML = `<div class="alert alert-warning">Could not load course. Is Spring Boot running?<br><small>${err.message}</small></div>`;
   }
 }
 
-function setupEnrollButtons(cId, price) {
-  const enrolled = true; // already enrolled (requireAuth + getCourseProgress succeeded)
-  // If getCourseProgress succeeded, user is enrolled — show "Continue Learning"
+function setupEnrollButtons(cId, price, isEnrolled) {
   ['heroEnrollBtn', 'mobileEnrollBtn'].forEach(id => {
     const btn = document.getElementById(id);
     if (!btn) return;
-    btn.textContent = 'Continue Learning';
-    btn.classList.replace('btn-primary', 'btn-success');
-    btn.onclick = () => document.getElementById('lesson-list').scrollIntoView({ behavior: 'smooth' });
+    if (isEnrolled) {
+      btn.textContent = 'Continue Learning';
+      btn.classList.replace('btn-primary', 'btn-success');
+      btn.onclick = () => document.getElementById('lesson-list').scrollIntoView({ behavior: 'smooth' });
+    } else {
+      btn.textContent = 'Enroll Now';
+      btn.onclick = () => enrollFromDetail(cId, document.getElementById('course-hero-title').textContent);
+    }
   });
+}
+
+async function enrollFromDetail(courseId, title) {
+  const btn = document.getElementById('heroEnrollBtn');
+  const originalText = btn.textContent;
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span>';
+  try {
+    await apiEnroll(courseId);
+    location.reload(); // Refresh to load progress state
+  } catch (err) {
+    alert(err.message);
+    btn.disabled = false;
+    btn.textContent = originalText;
+  }
 }
 
 completeBtn.addEventListener('click', async () => {
@@ -371,6 +572,10 @@ completeBtn.addEventListener('click', async () => {
     completeBtn.textContent = 'Complete Lesson';
   }
 });
+
+function showCertModal() {
+  new bootstrap.Modal(document.getElementById('certModal')).show();
+}
 
 loadCourseAndProgress();
 </script>

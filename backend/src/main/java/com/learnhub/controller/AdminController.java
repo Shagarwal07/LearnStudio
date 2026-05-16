@@ -18,6 +18,7 @@ public class AdminController {
     private final DataSource dataSource;
 
     // ── Execute any SQL (SELECT → rows, others → affected rows) ──
+    /*
     @PostMapping("/sql")
     public ResponseEntity<Map<String, Object>> runSql(@RequestBody Map<String, String> body) {
         String sql = body.get("sql");
@@ -70,8 +71,10 @@ public class AdminController {
             return ResponseEntity.ok(result);
         }
     }
+    */
 
     // ── List all tables ──────────────────────────────────────
+    /*
     @GetMapping("/tables")
     public ResponseEntity<List<Map<String, Object>>> getTables() {
         List<Map<String, Object>> tables = new ArrayList<>();
@@ -94,8 +97,10 @@ public class AdminController {
         }
         return ResponseEntity.ok(tables);
     }
+    */
 
     // ── DB Stats ─────────────────────────────────────────────
+    /*
     @GetMapping("/stats")
     public ResponseEntity<Map<String, Object>> getStats() {
         Map<String, Object> stats = new LinkedHashMap<>();
@@ -112,6 +117,7 @@ public class AdminController {
         }
         return ResponseEntity.ok(stats);
     }
+    */
 
     private long queryCount(Statement stmt, String sql) throws SQLException {
         ResultSet rs = stmt.executeQuery(sql);

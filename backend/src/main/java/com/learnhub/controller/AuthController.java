@@ -29,4 +29,9 @@ public class AuthController {
     public ResponseEntity<AuthResponse> googleLogin(@RequestBody Map<String, String> body) {
         return ResponseEntity.ok(authService.loginWithGoogle(body.get("credential")));
     }
+
+    @PostMapping("/google/register")
+    public ResponseEntity<AuthResponse> googleRegister(@RequestBody Map<String, String> body) {
+        return ResponseEntity.ok(authService.registerWithGoogle(body.get("credential"), body.get("role")));
+    }
 }

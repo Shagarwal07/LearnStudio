@@ -18,4 +18,5 @@ public class CourseDTO {
     private Level level;
     private String instructorName;
     private int totalLessons;
+    private String previewVideoUrl;
 }

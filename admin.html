@@ -3,49 +3,49 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>LearnHub – Dev Panel</title>
+  <title>LearnHub – Server Control Panel</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet"/>
   <style>
     body { background:#0f172a; color:#e2e8f0; font-family:'Segoe UI',sans-serif; }
-    .panel { background:#1e293b; border-radius:16px; padding:1.5rem; border:1px solid #334155; }
-    .status-dot { width:12px; height:12px; border-radius:50%; display:inline-block; }
-    .dot-up   { background:#22c55e; box-shadow:0 0 8px #22c55e; animation:pulse 1.5s infinite; }
-    .dot-down { background:#ef4444; }
+    .panel { background:#1e293b; border-radius:16px; padding:2rem; border:1px solid #334155; }
+    .status-dot { width:14px; height:14px; border-radius:50%; display:inline-block; margin-right:8px; }
+    .dot-running  { background:#22c55e; box-shadow:0 0 8px #22c55e; animation:pulse 1.5s infinite; }
+    .dot-starting { background:#f59e0b; box-shadow:0 0 8px #f59e0b; animation:pulse .8s infinite; }
+    .dot-stopped  { background:#ef4444; }
     @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
-    .cmd-box {
-      background:#0f172a; border-radius:8px; padding:.85rem 1rem;
-      font-family:monospace; font-size:.82rem; color:#38bdf8;
-      border:1px solid #334155; user-select:all; cursor:pointer;
-      transition: border-color .2s;
+    .log-box {
+      background:#0f172a; border-radius:10px; padding:1rem;
+      height:380px; overflow-y:auto; font-family:monospace;
+      font-size:.78rem; border:1px solid #334155;
     }
-    .cmd-box:hover { border-color:#4f46e5; }
-    .cmd-label { font-size:.72rem; color:#64748b; text-transform:uppercase; margin-bottom:.3rem; }
-    .api-result {
-      background:#0f172a; border-radius:8px; padding:.85rem;
-      font-family:monospace; font-size:.75rem; color:#22c55e;
-      border:1px solid #334155; max-height:200px; overflow-y:auto;
-      white-space:pre-wrap; word-break:break-all;
+    .log-line { margin-bottom:2px; }
+    .log-line.success { color:#22c55e; }
+    .log-line.warn    { color:#f59e0b; }
+    .log-line.error   { color:#ef4444; }
+    .log-line.info    { color:#94a3b8; }
+    .btn-control {
+      padding:.7rem 1.8rem; border-radius:10px;
+      font-weight:600; font-size:.95rem;
     }
-    .step-num {
-      width:28px; height:28px; border-radius:50%;
-      background:#4f46e5; display:inline-flex;
-      align-items:center; justify-content:center;
-      font-size:.8rem; font-weight:700; flex-shrink:0;
+    .metric-box {
+      background:#0f172a; border-radius:12px;
+      padding:1.2rem; border:1px solid #334155;
+      text-align:center;
     }
-    .badge-method { font-size:.7rem; padding:2px 7px; border-radius:4px; }
+    .metric-box h3 { font-size:1.8rem; font-weight:700; margin:0; }
   </style>
 </head>
 <body>
-<div class="container py-4" style="max-width:960px">
+<div class="container py-4">
 
   <!-- Header -->
   <div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-3">
     <div>
-      <h4 class="fw-bold mb-1" style="color:#818cf8">
-        <i class="bi bi-terminal me-2"></i>LearnHub Dev Panel
-      </h4>
-      <p class="text-secondary small mb-0">Local development tools — no CMD needed</p>
+      <h3 class="fw-bold mb-1" style="color:#818cf8">
+        <i class="bi bi-server me-2"></i>LearnHub Server Control
+      </h3>
+      <p class="text-secondary small mb-0">Manage Spring Boot backend without touching CMD</p>
     </div>
     <a href="index.html" class="btn btn-outline-secondary btn-sm">
       <i class="bi bi-arrow-left me-1"></i>Back to App
@@ -54,227 +54,249 @@
 
   <div class="row g-4">
 
-    <!-- Col 1: Status + Quick Tests -->
+    <!-- Left: Control Panel -->
     <div class="col-lg-5">
 
-      <!-- Server Status -->
+      <!-- Status Card -->
       <div class="panel mb-4">
         <h6 class="text-secondary small text-uppercase mb-3">Server Status</h6>
-        <div class="d-flex align-items-center gap-2 mb-3">
-          <span class="status-dot dot-down" id="statusDot"></span>
-          <span class="fw-semibold" id="statusText">Checking...</span>
-          <button class="btn btn-outline-secondary btn-sm ms-auto" onclick="checkStatus()">
-            <i class="bi bi-arrow-clockwise"></i>
-          </button>
+        <div class="d-flex align-items-center mb-3">
+          <span class="status-dot dot-stopped" id="statusDot"></span>
+          <span class="fw-bold fs-5" id="statusText">Checking...</span>
         </div>
-        <div class="row g-2 text-center">
+        <div class="row g-2 mb-3">
           <div class="col-6">
-            <div class="p-2 rounded" style="background:#0f172a;border:1px solid #334155">
-              <div class="text-secondary" style="font-size:.7rem">BACKEND</div>
-              <div class="fw-bold" style="color:#38bdf8">:8080</div>
+            <div class="metric-box">
+              <div class="text-secondary small mb-1">Port</div>
+              <h3 style="color:#818cf8">8080</h3>
             </div>
           </div>
           <div class="col-6">
-            <div class="p-2 rounded" style="background:#0f172a;border:1px solid #334155">
-              <div class="text-secondary" style="font-size:.7rem">FRONTEND</div>
-              <div class="fw-bold" style="color:#38bdf8">:5500</div>
+            <div class="metric-box">
+              <div class="text-secondary small mb-1">Process ID</div>
+              <h3 style="color:#22c55e" id="pidDisplay">—</h3>
             </div>
+          </div>
+        </div>
+        <div class="metric-box">
+          <div class="text-secondary small mb-1">API Base URL</div>
+          <div class="fw-semibold" style="color:#38bdf8;font-size:.9rem">
+            http://localhost:8080/api
           </div>
         </div>
       </div>
 
-      <!-- Quick API Tests -->
-      <div class="panel mb-4">
-        <h6 class="text-secondary small text-uppercase mb-3">Quick API Tests</h6>
-        <div class="d-grid gap-2 mb-3">
-          <button class="btn btn-outline-info btn-sm text-start" onclick="testApi('GET','/api/courses')">
-            <span class="badge bg-success badge-method me-2">GET</span>/api/courses
-          </button>
-          <button class="btn btn-outline-info btn-sm text-start" onclick="testApi('GET','/api/courses/1')">
-            <span class="badge bg-success badge-method me-2">GET</span>/api/courses/1
-          </button>
-          <button class="btn btn-outline-warning btn-sm text-start" onclick="testApi('GET','/api/users/me')">
-            <span class="badge bg-warning text-dark badge-method me-2">AUTH</span>/api/users/me
-          </button>
-          <button class="btn btn-outline-warning btn-sm text-start" onclick="testApi('GET','/api/enrollments/my')">
-            <span class="badge bg-warning text-dark badge-method me-2">AUTH</span>/api/enrollments/my
-          </button>
-        </div>
-        <div id="apiResult" class="api-result d-none"></div>
-      </div>
-
-      <!-- DB Quick Links -->
+      <!-- Control Buttons -->
       <div class="panel">
-        <h6 class="text-secondary small text-uppercase mb-3">Database</h6>
+        <h6 class="text-secondary small text-uppercase mb-3">Controls</h6>
+        <div class="d-grid gap-3">
+          <button class="btn btn-success btn-control" onclick="controlServer('start')" id="btnStart">
+            <i class="bi bi-play-fill me-2"></i>Start Spring Boot
+          </button>
+          <button class="btn btn-warning btn-control text-dark" onclick="controlServer('restart')" id="btnRestart">
+            <i class="bi bi-arrow-clockwise me-2"></i>Restart Spring Boot
+          </button>
+          <button class="btn btn-danger btn-control" onclick="controlServer('stop')" id="btnStop">
+            <i class="bi bi-stop-fill me-2"></i>Stop Spring Boot
+          </button>
+        </div>
+
+        <hr class="border-secondary my-3"/>
+
+        <!-- Quick API Tests -->
+        <h6 class="text-secondary small text-uppercase mb-2">Quick API Test</h6>
         <div class="d-grid gap-2">
-          <button class="btn btn-outline-secondary btn-sm text-start" onclick="copyCmd('mysql -u root -pP@ssword2073 lms_db')">
-            <i class="bi bi-database me-2"></i>Connect to lms_db
+          <button class="btn btn-outline-info btn-sm" onclick="testApi('/api/courses')">
+            <i class="bi bi-arrow-right-circle me-1"></i>GET /api/courses
           </button>
-          <button class="btn btn-outline-secondary btn-sm text-start" onclick="copyCmd('mysql -u root -pP@ssword2073 lms_db -e \"SELECT id,title FROM courses;\"')">
-            <i class="bi bi-table me-2"></i>List courses
-          </button>
-          <button class="btn btn-outline-secondary btn-sm text-start" onclick="copyCmd('mysql -u root -pP@ssword2073 lms_db -e \"SELECT id,name,email,role FROM users;\"')">
-            <i class="bi bi-people me-2"></i>List users
+          <button class="btn btn-outline-info btn-sm" onclick="testApi('/api/users/me')">
+            <i class="bi bi-arrow-right-circle me-1"></i>GET /api/users/me
           </button>
         </div>
-        <div id="copyMsg" class="text-success small mt-2 d-none">✓ Copied to clipboard!</div>
+        <div id="apiTestResult" class="mt-2 p-2 rounded" style="background:#0f172a;font-size:.75rem;font-family:monospace;display:none;color:#22c55e;word-break:break-all"></div>
+      </div>
+
+      <!-- Admin Management Hub -->
+      <div class="panel mt-4">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <h6 class="text-secondary small text-uppercase mb-0">Management Hub</h6>
+          <button class="btn btn-sm btn-outline-info" type="button" data-bs-toggle="collapse" data-bs-target="#mgmtTools">
+            <i class="bi bi-grid-fill"></i> Toggle Tools
+          </button>
+        </div>
+        <div class="collapse" id="mgmtTools">
+          <div class="d-grid gap-2 pt-3">
+            <a href="admin-courses.html" class="btn btn-outline-light btn-sm text-start py-2">
+              <i class="bi bi-journal-plus me-2"></i>Manage Courses
+            </a>
+            <!-- 
+            <a href="admin-db.html" class="btn btn-outline-light btn-sm text-start py-2">
+              <i class="bi bi-database-fill-gear me-2"></i>Database Manager
+            </a>
+            -->
+          </div>
+        </div>
       </div>
     </div>
 
-    <!-- Col 2: How to Run -->
+    <!-- Right: Live Logs -->
     <div class="col-lg-7">
-
-      <!-- VS Code Tasks (primary method) -->
-      <div class="panel mb-4">
-        <h6 class="text-secondary small text-uppercase mb-2">
-          <i class="bi bi-keyboard me-2" style="color:#818cf8"></i>VS Code Tasks (Recommended)
-        </h6>
-        <p class="text-secondary small mb-3">Press <kbd class="bg-dark text-white px-2 py-1 rounded">Ctrl+Shift+B</kbd> in VS Code to start Spring Boot instantly. Or use Terminal → Run Task.</p>
-        <div class="d-flex flex-column gap-2">
-          <div class="d-flex align-items-center gap-3 p-2 rounded" style="background:#0f172a;border:1px solid #334155">
-            <span class="step-num">▶</span>
-            <div>
-              <div class="fw-semibold small">🚀 Start Spring Boot</div>
-              <div class="text-secondary" style="font-size:.75rem">Ctrl+Shift+B → default build task</div>
-            </div>
+      <div class="panel h-100">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h6 class="text-secondary small text-uppercase mb-0">
+            <i class="bi bi-terminal me-2"></i>Live Server Logs
+          </h6>
+          <div class="d-flex gap-2">
+            <span class="badge bg-secondary" id="logCount">0 lines</span>
+            <button class="btn btn-outline-secondary btn-sm" onclick="clearLogs()">
+              <i class="bi bi-trash"></i>
+            </button>
+            <button class="btn btn-outline-secondary btn-sm" onclick="toggleAutoScroll()" id="scrollBtn">
+              <i class="bi bi-arrow-down-circle"></i> Auto
+            </button>
           </div>
-          <div class="d-flex align-items-center gap-3 p-2 rounded" style="background:#0f172a;border:1px solid #334155">
-            <span class="step-num" style="background:#ef4444">■</span>
-            <div>
-              <div class="fw-semibold small">🛑 Stop Spring Boot</div>
-              <div class="text-secondary" style="font-size:.75rem">Terminal → Run Task → Stop Spring Boot</div>
-            </div>
-          </div>
-          <div class="d-flex align-items-center gap-3 p-2 rounded" style="background:#0f172a;border:1px solid #334155">
-            <span class="step-num" style="background:#f59e0b">↺</span>
-            <div>
-              <div class="fw-semibold small">🔄 Restart Spring Boot</div>
-              <div class="text-secondary" style="font-size:.75rem">Terminal → Run Task → Restart Spring Boot</div>
-            </div>
-          </div>
-          <div class="d-flex align-items-center gap-3 p-2 rounded" style="background:#0f172a;border:1px solid #334155">
-            <span class="step-num" style="background:#0e7490">🗄</span>
-            <div>
-              <div class="fw-semibold small">🗄️ Run DB Seed</div>
-              <div class="text-secondary" style="font-size:.75rem">Terminal → Run Task → Run DB Seed</div>
-            </div>
-          </div>
+        </div>
+        <div class="log-box" id="logBox">
+          <div class="log-line info">Waiting for server manager on port 9090...</div>
+          <div class="log-line info">Make sure server-manager.js is running.</div>
         </div>
       </div>
-
-      <!-- Manual Commands (fallback) -->
-      <div class="panel mb-4">
-        <h6 class="text-secondary small text-uppercase mb-3">
-          <i class="bi bi-terminal me-2" style="color:#38bdf8"></i>Manual Commands
-          <span class="text-secondary fw-normal" style="font-size:.72rem">(click to copy)</span>
-        </h6>
-        <div class="mb-3">
-          <div class="cmd-label">Start Backend</div>
-          <div class="cmd-box" onclick="copyCmd(this.textContent.trim())">cd backend && mvn spring-boot:run</div>
-        </div>
-        <div class="mb-3">
-          <div class="cmd-label">Stop Backend (kill port 8080)</div>
-          <div class="cmd-box" onclick="copyCmd(this.textContent.trim())">FOR /F "tokens=5" %P IN ('netstat -ano ^| findstr :8080') DO taskkill /PID %P /F</div>
-        </div>
-        <div class="mb-3">
-          <div class="cmd-label">Run DB Seed</div>
-          <div class="cmd-box" onclick="copyCmd(this.textContent.trim())">mysql -u root -pP@ssword2073 lms_db &lt; backend/src/main/resources/full-seed.sql</div>
-        </div>
-        <div>
-          <div class="cmd-label">Docker (full deploy)</div>
-          <div class="cmd-box" onclick="copyCmd(this.textContent.trim())">docker compose up --build</div>
-        </div>
-      </div>
-
-      <!-- Deployment Options -->
-      <div class="panel">
-        <h6 class="text-secondary small text-uppercase mb-3">
-          <i class="bi bi-cloud-upload me-2" style="color:#22c55e"></i>Deployment Options
-        </h6>
-        <div class="d-flex flex-column gap-2">
-          <div class="d-flex align-items-start gap-3 p-2 rounded" style="background:#0f172a;border:1px solid #334155">
-            <i class="bi bi-box-seam text-warning fs-5 mt-1"></i>
-            <div>
-              <div class="fw-semibold small">Docker Compose <span class="badge bg-success ms-1" style="font-size:.65rem">Ready</span></div>
-              <div class="text-secondary" style="font-size:.75rem">Run <code class="text-info">docker compose up --build</code> — starts MySQL + Backend together</div>
-            </div>
-          </div>
-          <div class="d-flex align-items-start gap-3 p-2 rounded" style="background:#0f172a;border:1px solid #334155">
-            <i class="bi bi-train-front text-purple fs-5 mt-1" style="color:#818cf8"></i>
-            <div>
-              <div class="fw-semibold small">Railway.app <span class="badge bg-primary ms-1" style="font-size:.65rem">Free Tier</span></div>
-              <div class="text-secondary" style="font-size:.75rem">Push to GitHub → connect Railway → auto-deploys from Dockerfile</div>
-            </div>
-          </div>
-          <div class="d-flex align-items-start gap-3 p-2 rounded" style="background:#0f172a;border:1px solid #334155">
-            <i class="bi bi-cloud text-info fs-5 mt-1"></i>
-            <div>
-              <div class="fw-semibold small">Render.com <span class="badge bg-primary ms-1" style="font-size:.65rem">Free Tier</span></div>
-              <div class="text-secondary" style="font-size:.75rem">Web Service → connect GitHub → set env vars → deploy</div>
-            </div>
-          </div>
-        </div>
-      </div>
-
     </div>
+
   </div>
 </div>
 
-<script src="js/api.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-  const SPRING = 'http://localhost:8080';
+  const MANAGER = 'http://localhost:9090';
+  const SPRING  = 'http://localhost:8080';
+  let autoScroll = true;
+  let lastLogCount = 0;
 
-  async function checkStatus() {
+  // ── Status polling every 2 seconds ──────────────────────
+  async function pollStatus() {
+    try {
+      const res  = await fetch(`${MANAGER}/status`);
+      const data = await res.json();
+      updateStatusUI(data.status, data.pid);
+    } catch {
+      updateStatusUI('offline', null);
+    }
+  }
+
+  function updateStatusUI(s, pid) {
     const dot  = document.getElementById('statusDot');
     const text = document.getElementById('statusText');
-    try {
-      const res = await fetch(`${SPRING}/api/courses`, { signal: AbortSignal.timeout(3000) });
-      if (res.ok) {
-        dot.className = 'status-dot dot-up';
-        text.textContent = '🟢 Spring Boot is RUNNING';
-        text.style.color = '#22c55e';
-      } else {
-        throw new Error();
-      }
-    } catch {
-      dot.className = 'status-dot dot-down';
-      text.textContent = '🔴 Spring Boot is STOPPED';
+    const pidEl = document.getElementById('pidDisplay');
+
+    dot.className = 'status-dot';
+    if (s === 'running') {
+      dot.classList.add('dot-running');
+      text.textContent = '🟢 RUNNING';
+      text.style.color = '#22c55e';
+    } else if (s === 'starting') {
+      dot.classList.add('dot-starting');
+      text.textContent = '🟡 STARTING...';
+      text.style.color = '#f59e0b';
+    } else if (s === 'stopped') {
+      dot.classList.add('dot-stopped');
+      text.textContent = '🔴 STOPPED';
       text.style.color = '#ef4444';
+    } else {
+      dot.classList.add('dot-stopped');
+      text.textContent = '⚫ MANAGER OFFLINE';
+      text.style.color = '#64748b';
     }
+    pidEl.textContent = pid || '—';
   }
 
-  async function testApi(method, endpoint) {
-    const el = document.getElementById('apiResult');
-    el.classList.remove('d-none');
-    el.style.color = '#94a3b8';
-    el.textContent = `${method} ${endpoint}\nLoading...`;
-
-    const headers = {};
-    const token = localStorage.getItem('lms_token');
-    if (token) headers['Authorization'] = 'Bearer ' + token;
+  // ── Control buttons ──────────────────────────────────────
+  async function controlServer(action) {
+    const btnMap = { start:'btnStart', stop:'btnStop', restart:'btnRestart' };
+    const btn = document.getElementById(btnMap[action]);
+    const orig = btn.innerHTML;
+    btn.disabled = true;
+    btn.innerHTML = `<span class="spinner-border spinner-border-sm me-2"></span>${action}ing...`;
 
     try {
-      const res  = await fetch(SPRING + endpoint, { headers });
+      await fetch(`${MANAGER}/${action}`);
+      appendLog(`→ ${action.toUpperCase()} command sent`, 'success');
+    } catch {
+      appendLog('❌ Server manager not running. Start server-manager.js first.', 'error');
+    }
+    setTimeout(() => { btn.disabled = false; btn.innerHTML = orig; }, 2000);
+  }
+
+  // ── Log polling every 1.5 seconds ───────────────────────
+  async function pollLogs() {
+    try {
+      const res  = await fetch(`${MANAGER}/logs`);
       const data = await res.json();
-      el.style.color = res.ok ? '#22c55e' : '#f59e0b';
-      el.textContent = `${method} ${endpoint}  →  ${res.status}\n\n${JSON.stringify(data, null, 2).substring(0, 600)}`;
-    } catch (err) {
+      if (data.logs.length !== lastLogCount) {
+        renderLogs(data.logs);
+        lastLogCount = data.logs.length;
+      }
+    } catch { /* manager not running */ }
+  }
+
+  function renderLogs(lines) {
+    const box = document.getElementById('logBox');
+    box.innerHTML = lines.map(line => {
+      let cls = 'info';
+      if (line.includes('✅') || line.includes('Started'))  cls = 'success';
+      else if (line.includes('[WARN]') || line.includes('WARN')) cls = 'warn';
+      else if (line.includes('ERROR') || line.includes('[ERR]')) cls = 'error';
+      return `<div class="log-line ${cls}">${escHtml(line)}</div>`;
+    }).join('');
+    document.getElementById('logCount').textContent = lines.length + ' lines';
+    if (autoScroll) box.scrollTop = box.scrollHeight;
+  }
+
+  function appendLog(msg, cls = 'info') {
+    const box = document.getElementById('logBox');
+    const div = document.createElement('div');
+    div.className = `log-line ${cls}`;
+    div.textContent = `[${new Date().toLocaleTimeString()}] ${msg}`;
+    box.appendChild(div);
+    if (autoScroll) box.scrollTop = box.scrollHeight;
+  }
+
+  function clearLogs() {
+    document.getElementById('logBox').innerHTML = '';
+    lastLogCount = 0;
+  }
+
+  function toggleAutoScroll() {
+    autoScroll = !autoScroll;
+    document.getElementById('scrollBtn').innerHTML =
+      `<i class="bi bi-arrow-${autoScroll ? 'down' : 'up'}-circle"></i> Auto`;
+  }
+
+  // ── Quick API test ───────────────────────────────────────
+  async function testApi(endpoint) {
+    const el = document.getElementById('apiTestResult');
+    el.style.display = 'block';
+    el.textContent = 'Testing...';
+    try {
+      const res  = await fetch(SPRING + endpoint);
+      const data = await res.json();
+      el.style.color = '#22c55e';
+      el.textContent = JSON.stringify(data, null, 2).substring(0, 300);
+    } catch {
       el.style.color = '#ef4444';
-      el.textContent = `❌ Cannot reach ${SPRING}\nMake sure Spring Boot is running.`;
+      el.textContent = '❌ Spring Boot not reachable on port 8080';
     }
   }
 
-  function copyCmd(text) {
-    navigator.clipboard.writeText(text).then(() => {
-      const msg = document.getElementById('copyMsg');
-      msg.classList.remove('d-none');
-      setTimeout(() => msg.classList.add('d-none'), 2000);
-    });
+  function escHtml(s) {
+    return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
   }
 
-  // Auto-check on load
-  checkStatus();
-  setInterval(checkStatus, 5000);
+  // ── Start polling ────────────────────────────────────────
+  pollStatus();
+  pollLogs();
+  setInterval(pollStatus, 2000);
+  setInterval(pollLogs,   1500);
 </script>
 </body>
 </html>

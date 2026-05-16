@@ -10,74 +10,111 @@ import java.util.Map;
 public class GeminiService {
 
     @Value("${gemini.api.key}")
-    private String apiKey;
+    private String geminiKey;
 
     @Value("${gemini.api.url}")
-    private String apiUrl;
+    private String geminiUrl;
+
+    @Value("${grok.api.key}")
+    private String grokKey;
+
+    @Value("${grok.api.url}")
+    private String grokUrl;
+
+    @Value("${grok.model}")
+    private String grokModel;
 
     private final WebClient webClient = WebClient.builder().build();
 
-    // Core method — sends prompt to Gemini, returns text response
-    public String ask(String prompt) {
-        Map<String, Object> body = Map.of(
-            "contents", List.of(
-                Map.of("parts", List.of(Map.of("text", prompt)))
-            )
-        );
+    // ── Route to correct provider ─────────────────────────
+    public String ask(String prompt, String model) {
+        return "grok".equalsIgnoreCase(model) ? askGrok(prompt) : askGemini(prompt);
+    }
 
+    // ── Gemini ────────────────────────────────────────────
+    private String askGemini(String prompt) {
+        Map<String, Object> body = Map.of(
+            "contents", List.of(Map.of("parts", List.of(Map.of("text", prompt))))
+        );
         try {
             Map response = webClient.post()
-                .uri(apiUrl + "?key=" + apiKey)
+                .uri(geminiUrl + "?key=" + geminiKey)
                 .header("Content-Type", "application/json")
                 .bodyValue(body)
                 .retrieve()
+                .onStatus(s -> s.value() == 429,
+                    r -> r.bodyToMono(String.class).map(b -> new RuntimeException("QUOTA_EXCEEDED")))
+                .onStatus(s -> s.is4xxClientError() || s.is5xxServerError(),
+                    r -> r.bodyToMono(String.class).map(b -> new RuntimeException("API_ERROR: " + b)))
                 .bodyToMono(Map.class)
                 .block();
 
-            // Extract text from Gemini response
             var candidates = (List<?>) response.get("candidates");
             var content    = (Map<?, ?>) ((Map<?, ?>) candidates.get(0)).get("content");
             var parts      = (List<?>) content.get("parts");
             return ((Map<?, ?>) parts.get(0)).get("text").toString();
 
+        } catch (RuntimeException e) {
+            return e.getMessage() != null && e.getMessage().contains("QUOTA_EXCEEDED")
+                ? "ERROR:QUOTA_EXCEEDED" : "ERROR:" + e.getMessage();
         } catch (Exception e) {
-            return "AI service unavailable. Please try again later.";
+            return "ERROR:Gemini unavailable.";
         }
     }
 
-    // ── Feature 1: Doubt Solver ───────────────────────────
-    public String solveDoubt(String question, String courseName) {
-        String prompt = String.format(
+    // ── Grok (xAI — OpenAI-compatible format) ────────────
+    private String askGrok(String prompt) {
+        Map<String, Object> body = Map.of(
+            "model", grokModel,
+            "messages", List.of(Map.of("role", "user", "content", prompt))
+        );
+        try {
+            Map response = webClient.post()
+                .uri(grokUrl)
+                .header("Content-Type", "application/json")
+                .header("Authorization", "Bearer " + grokKey)
+                .bodyValue(body)
+                .retrieve()
+                .onStatus(s -> s.value() == 429,
+                    r -> r.bodyToMono(String.class).map(b -> new RuntimeException("QUOTA_EXCEEDED")))
+                .onStatus(s -> s.is4xxClientError() || s.is5xxServerError(),
+                    r -> r.bodyToMono(String.class).map(b -> new RuntimeException("API_ERROR: " + b)))
+                .bodyToMono(Map.class)
+                .block();
+
+            var choices = (List<?>) response.get("choices");
+            var message = (Map<?, ?>) ((Map<?, ?>) choices.get(0)).get("message");
+            return message.get("content").toString();
+
+        } catch (RuntimeException e) {
+            return e.getMessage() != null && e.getMessage().contains("QUOTA_EXCEEDED")
+                ? "ERROR:QUOTA_EXCEEDED" : "ERROR:" + e.getMessage();
+        } catch (Exception e) {
+            return "ERROR:Grok unavailable.";
+        }
+    }
+
+    // ── Features ──────────────────────────────────────────
+    public String solveDoubt(String question, String courseName, String model) {
+        return ask(String.format(
             "You are a helpful tutor for the course '%s'. " +
             "Answer this student's question clearly and concisely in 3-5 lines: %s",
-            courseName, question
-        );
-        return ask(prompt);
+            courseName, question), model);
     }
 
-    // ── Feature 2: Course Recommender ────────────────────
-    public String recommendCourses(List<String> enrolledCourses) {
-        String enrolled = String.join(", ", enrolledCourses);
-        String prompt = String.format(
+    public String recommendCourses(List<String> enrolledCourses, String model) {
+        String enrolled = enrolledCourses.isEmpty() ? "none yet" : String.join(", ", enrolledCourses);
+        return ask(String.format(
             "A student is enrolled in these courses: %s. " +
             "Recommend 3 next courses they should take to advance their career. " +
-            "Format as a numbered list with course name and one-line reason. Keep it brief.",
-            enrolled.isEmpty() ? "none yet" : enrolled
-        );
-        return ask(prompt);
+            "Format as a numbered list with course name and one-line reason. Keep it brief.", enrolled), model);
     }
 
-    // ── Feature 3: Quiz Generator ─────────────────────────
-    public String generateQuiz(String topic) {
-        String prompt = String.format(
-            "Generate 5 multiple choice questions about '%s'. " +
-            "Format each question as:\n" +
-            "Q1. [question]\n" +
-            "A) option  B) option  C) option  D) option\n" +
-            "Answer: [correct option]\n\n" +
-            "Keep questions practical and beginner-friendly.",
-            topic
-        );
-        return ask(prompt);
+    public String generateQuiz(String topic, String model) {
+        return ask(String.format(
+            "Generate exactly 5 multiple choice questions about '%s'. " +
+            "Respond ONLY with a valid JSON array, no markdown, no explanation. " +
+            "Format: [{\"question\":\"...\",\"options\":{\"A\":\"...\",\"B\":\"...\",\"C\":\"...\",\"D\":\"...\"},\"answer\":\"A\"}]. " +
+            "Keep questions practical and beginner-friendly.", topic), model);
     }
 }

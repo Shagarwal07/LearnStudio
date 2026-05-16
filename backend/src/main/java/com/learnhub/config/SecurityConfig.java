@@ -34,10 +34,12 @@ public class SecurityConfig {
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
             .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
+                // Allow ALL preflight OPTIONS requests
                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                // Public endpoints
                 .requestMatchers("/api/auth/**").permitAll()
-                .requestMatchers("/api/health").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/courses/**").permitAll()
+                // Everything else needs JWT
                 .anyRequest().authenticated()
             )
             .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
@@ -56,32 +58,20 @@ public class SecurityConfig {
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
-        // Public config — no credentials, allow any origin (for courses, health)
-        CorsConfiguration pub = new CorsConfiguration();
-        pub.addAllowedOriginPattern("*");
-        pub.setAllowedMethods(List.of("GET", "OPTIONS"));
-        pub.setAllowedHeaders(List.of("*"));
-        pub.setAllowCredentials(false);
-
-        // Auth config — credentials required, restrict to known origins
-        CorsConfiguration auth = new CorsConfiguration();
-        auth.setAllowedOriginPatterns(List.of(
-            "http://localhost:*",
-            "http://127.0.0.1:*",
-            "https://learnstudio.netlify.app",
-            "https://*.netlify.app",
-            "https://*.railway.app"
+        CorsConfiguration config = new CorsConfiguration();
+        config.setAllowedOrigins(List.of(
+            "http://localhost:5500",
+            "http://127.0.0.1:5500",
+            "http://localhost:3000",
+            "http://127.0.0.1:3000",
+            "https://learnstudio.netlify.app",  // production frontend
+            "https://learnhub-frontend.netlify.app"
         ));
-        auth.setAllowedMethods(List.of("GET","POST","PUT","DELETE","OPTIONS","PATCH"));
-        auth.setAllowedHeaders(List.of("*"));
-        auth.setExposedHeaders(List.of("Authorization"));
-        auth.setAllowCredentials(true);
-        auth.setMaxAge(3600L);
-
+        config.setAllowedMethods(List.of("GET","POST","PUT","DELETE","OPTIONS","PATCH"));
+        config.setAllowedHeaders(List.of("*"));
+        config.setAllowCredentials(true);
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/api/health", pub);
-        source.registerCorsConfiguration("/api/courses/**", pub);
-        source.registerCorsConfiguration("/**", auth);
+        source.registerCorsConfiguration("/**", config);
         return source;
     }
 }

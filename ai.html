@@ -12,7 +12,23 @@
     .ai-header { background:linear-gradient(135deg,#4f46e5,#0e7490); color:#fff; border-radius:16px; padding:2rem; margin-bottom:2rem; }
     .chat-bubble { background:#f1f5f9; border-radius:12px; padding:1rem 1.2rem; font-size:.9rem; line-height:1.7; white-space:pre-wrap; }
     .quiz-box { background:#f8fafc; border-radius:12px; padding:1.2rem; font-size:.88rem; line-height:1.8; white-space:pre-wrap; font-family:monospace; }
-    .feature-tab.active { background:var(--primary) !important; color:#fff !important; }
+    /* ── Interactive Quiz ── */
+    .quiz-progress-bar { height:6px; border-radius:3px; background:#e2e8f0; overflow:hidden; }
+    .quiz-progress-fill { height:100%; background:linear-gradient(90deg,#4f46e5,#0e7490); transition:width .4s; }
+    .quiz-question { font-size:1rem; font-weight:600; color:#1e293b; margin-bottom:1.2rem; }
+    .quiz-option { display:flex; align-items:center; gap:.75rem; padding:.85rem 1.1rem; border:2px solid #e2e8f0; border-radius:10px; cursor:pointer; transition:all .2s; margin-bottom:.6rem; font-size:.9rem; }
+    .quiz-option:hover:not(.disabled) { border-color:#4f46e5; background:#f5f3ff; }
+    .quiz-option.correct  { border-color:#16a34a; background:#f0fdf4; color:#15803d; }
+    .quiz-option.wrong    { border-color:#dc2626; background:#fef2f2; color:#dc2626; }
+    .quiz-option.disabled { cursor:default; }
+    .quiz-option .opt-key { width:28px; height:28px; border-radius:50%; background:#f1f5f9; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:.8rem; flex-shrink:0; }
+    .quiz-option.correct .opt-key  { background:#16a34a; color:#fff; }
+    .quiz-option.wrong   .opt-key  { background:#dc2626; color:#fff; }
+    .quiz-result-card { border-radius:16px; padding:2rem; text-align:center; }
+    .score-circle { width:100px; height:100px; border-radius:50%; display:flex; flex-direction:column; align-items:center; justify-content:center; margin:0 auto 1rem; font-weight:800; }
+    .model-pill { display:inline-flex; background:#ffffff22; border-radius:50px; padding:4px; gap:4px; }
+    .model-pill button { border:none; background:transparent; color:#ffffffaa; border-radius:50px; padding:5px 14px; font-size:.8rem; font-weight:600; transition:all .2s; cursor:pointer; }
+    .model-pill button.active { background:#fff; color:#4f46e5; }
     .typing { display:inline-block; }
     .typing span { display:inline-block; width:8px; height:8px; background:#4f46e5; border-radius:50%; margin:0 2px; animation:bounce .8s infinite; }
     .typing span:nth-child(2) { animation-delay:.15s; }
@@ -42,12 +58,26 @@
 
   <!-- Header -->
   <div class="ai-header">
-    <div class="d-flex align-items-center gap-3">
-      <div style="width:56px;height:56px;background:rgba(255,255,255,.2);border-radius:14px;
-                  display:flex;align-items:center;justify-content:center;font-size:1.8rem">🤖</div>
+    <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
+      <div class="d-flex align-items-center gap-3">
+        <div style="width:56px;height:56px;background:rgba(255,255,255,.2);border-radius:14px;
+                    display:flex;align-items:center;justify-content:center;font-size:1.8rem">🤖</div>
+        <div>
+          <h4 class="fw-bold mb-1">AI Learning Assistant</h4>
+          <p class="mb-0 opacity-75" id="aiProviderLabel">Powered by Google Gemini · Doubt Solver · Recommender · Quiz</p>
+        </div>
+      </div>
+      <!-- Model Selector -->
       <div>
-        <h4 class="fw-bold mb-1">AI Learning Assistant</h4>
-        <p class="mb-0 opacity-75">Powered by Google Gemini · Doubt Solver · Recommender · Quiz Generator</p>
+        <p class="text-white opacity-75 small mb-1">AI Model</p>
+        <div class="model-pill">
+          <button id="btnGemini" onclick="switchModel('gemini')" class="active">
+            ✦ Gemini
+          </button>
+          <button id="btnGrok" onclick="switchModel('grok')">
+            ⚡ Grok
+          </button>
+        </div>
       </div>
     </div>
   </div>
@@ -153,39 +183,78 @@
 
   <!-- ── Tab 3: Quiz Generator ── -->
   <div id="tab-quiz" class="d-none">
-    <div class="ai-card">
-      <h6 class="fw-bold mb-1">📝 AI Quiz Generator</h6>
-      <p class="text-muted small mb-3">
-        Enter any topic and Gemini will generate 5 MCQ questions instantly.
-      </p>
+
+    <!-- Setup screen -->
+    <div class="ai-card" id="quizSetup">
+      <h6 class="fw-bold mb-1">📝 AI Live Quiz</h6>
+      <p class="text-muted small mb-3">Enter a topic — Gemini generates 5 questions. Answer them live and get your score!</p>
       <div class="input-group mb-3" style="max-width:500px">
         <input type="text" class="form-control" id="quizTopic"
                placeholder="e.g. React Hooks, SQL Joins, Docker..."
                onkeydown="if(event.key==='Enter') generateQuiz()"/>
         <button class="btn btn-primary" onclick="generateQuiz()" id="quizBtn">
-          <i class="bi bi-lightning-fill me-1"></i> Generate Quiz
+          <i class="bi bi-lightning-fill me-1"></i> Start Quiz
         </button>
       </div>
-
-      <!-- Topic shortcuts -->
-      <div class="d-flex flex-wrap gap-2 mb-3">
+      <div class="d-flex flex-wrap gap-2">
         <button class="btn btn-sm btn-outline-secondary" onclick="quickQuiz('React Hooks')">React Hooks</button>
         <button class="btn btn-sm btn-outline-secondary" onclick="quickQuiz('SQL Joins')">SQL Joins</button>
         <button class="btn btn-sm btn-outline-secondary" onclick="quickQuiz('Docker basics')">Docker</button>
         <button class="btn btn-sm btn-outline-secondary" onclick="quickQuiz('Spring Boot REST API')">Spring Boot</button>
         <button class="btn btn-sm btn-outline-secondary" onclick="quickQuiz('Machine Learning basics')">ML Basics</button>
       </div>
+      <div id="quizError" class="d-none mt-3"></div>
+    </div>
 
-      <div id="quizAnswer" class="d-none">
-        <div class="d-flex justify-content-between align-items-center mb-2">
-          <div class="fw-semibold small text-primary">Generated Quiz</div>
-          <button class="btn btn-sm btn-outline-primary" onclick="copyQuiz()">
-            <i class="bi bi-clipboard me-1"></i>Copy
-          </button>
-        </div>
-        <div class="quiz-box" id="quizText"></div>
+    <!-- Live test screen -->
+    <div class="ai-card d-none" id="quizLive">
+      <!-- Header row -->
+      <div class="d-flex justify-content-between align-items-center mb-2">
+        <span class="fw-semibold" id="quizLiveTitle"></span>
+        <span class="badge bg-primary" id="quizCounter">1 / 5</span>
+      </div>
+      <!-- Progress bar -->
+      <div class="quiz-progress-bar mb-4">
+        <div class="quiz-progress-fill" id="quizProgressFill" style="width:0%"></div>
+      </div>
+      <!-- Question -->
+      <p class="quiz-question" id="quizQuestionText"></p>
+      <!-- Options -->
+      <div id="quizOptions"></div>
+      <!-- Feedback -->
+      <div id="quizFeedback" class="d-none mt-3 p-3 rounded-3 small"></div>
+      <!-- Next btn -->
+      <div class="mt-3 text-end">
+        <button class="btn btn-primary d-none" id="quizNextBtn" onclick="nextQuestion()">
+          Next <i class="bi bi-arrow-right"></i>
+        </button>
       </div>
     </div>
+
+    <!-- Result screen -->
+    <div class="ai-card d-none" id="quizResult">
+      <div class="quiz-result-card">
+        <div class="score-circle" id="scoreCircle">
+          <span id="scoreNum" style="font-size:1.8rem"></span>
+          <span style="font-size:.75rem;color:#64748b">out of 5</span>
+        </div>
+        <h5 class="fw-bold" id="scoreTitle"></h5>
+        <p class="text-muted small" id="scoreMsg"></p>
+        <div class="d-flex gap-2 justify-content-center mt-3">
+          <button class="btn btn-primary" onclick="retryQuiz()">
+            <i class="bi bi-arrow-repeat me-1"></i>Try Again
+          </button>
+          <button class="btn btn-outline-secondary" onclick="newQuiz()">
+            <i class="bi bi-plus-circle me-1"></i>New Topic
+          </button>
+        </div>
+      </div>
+      <!-- Answer review -->
+      <hr/>
+      <p class="fw-semibold small mb-3">📋 Review Answers</p>
+      <div id="quizReview"></div>
+    </div>
+
   </div>
 
 </div><!-- end main-content -->
@@ -194,6 +263,22 @@
 <script src="js/api.js"></script>
 <script>
   requireAuth();
+
+  // ── Model selector ───────────────────────────────────
+  const MODELS = {
+    gemini: { label: 'Powered by Google Gemini · Doubt Solver · Recommender · Quiz' },
+    grok:   { label: 'Powered by xAI Grok · Doubt Solver · Recommender · Quiz' }
+  };
+
+  function switchModel(m) {
+    setAiModel(m);
+    document.getElementById('btnGemini').classList.toggle('active', m === 'gemini');
+    document.getElementById('btnGrok').classList.toggle('active', m === 'grok');
+    document.getElementById('aiProviderLabel').textContent = MODELS[m].label;
+  }
+
+  // Init from localStorage
+  switchModel(getAiModel());
 
   // ── Tab switching ──────────────────────────────────────
   function showTab(name, btn) {
@@ -230,19 +315,20 @@
     try {
       const answer = await aiSolveDoubt(question, course);
       document.getElementById('doubtAnswer').classList.remove('d-none');
-      document.getElementById('doubtAnswer').innerHTML = `
-        <div class="d-flex align-items-start gap-3">
-          <div style="width:36px;height:36px;background:#4f46e5;border-radius:50%;
-                      display:flex;align-items:center;justify-content:center;
-                      color:#fff;font-size:1rem;flex-shrink:0">🤖</div>
-          <div class="flex-grow-1">
-            <div class="fw-semibold small text-primary mb-1">Gemini AI · ${course}</div>
-            <div class="chat-bubble">${answer}</div>
-          </div>
-        </div>`;
+      document.getElementById('doubtAnswer').innerHTML = answer.startsWith('ERROR:')
+        ? `<div class="alert alert-warning small">${formatAiError(answer)}</div>`
+        : `<div class="d-flex align-items-start gap-3">
+            <div style="width:36px;height:36px;background:#4f46e5;border-radius:50%;
+                        display:flex;align-items:center;justify-content:center;
+                        color:#fff;font-size:1rem;flex-shrink:0">🤖</div>
+            <div class="flex-grow-1">
+              <div class="fw-semibold small text-primary mb-1">${ getAiModel() === 'grok' ? '⚡ Grok' : '🤖 Gemini'} · ${course}</div>
+              <div class="chat-bubble">${answer}</div>
+            </div>
+          </div>`;
     } catch (e) {
       document.getElementById('doubtAnswer').innerHTML =
-        `<div class="alert alert-danger small">Failed to get answer. Check your API key.</div>`;
+        `<div class="alert alert-danger small">Failed to get answer. Is the backend running?</div>`;
     }
     btn.disabled = false;
     btn.innerHTML = '<i class="bi bi-send-fill"></i> Ask';
@@ -268,18 +354,19 @@
       const recs = await aiRecommend(courseNames);
 
       document.getElementById('recAnswer').classList.remove('d-none');
-      document.getElementById('recAnswer').innerHTML = `
-        <div class="d-flex align-items-start gap-3">
-          <div style="width:36px;height:36px;background:#0e7490;border-radius:50%;
-                      display:flex;align-items:center;justify-content:center;
-                      color:#fff;font-size:1rem;flex-shrink:0">🌟</div>
-          <div class="flex-grow-1">
-            <div class="fw-semibold small text-primary mb-1">
-              Based on ${courseNames.length} enrolled course(s)
+      document.getElementById('recAnswer').innerHTML = recs.startsWith('ERROR:')
+        ? `<div class="alert alert-warning small">${formatAiError(recs)}</div>`
+        : `<div class="d-flex align-items-start gap-3">
+            <div style="width:36px;height:36px;background:#0e7490;border-radius:50%;
+                        display:flex;align-items:center;justify-content:center;
+                        color:#fff;font-size:1rem;flex-shrink:0">🌟</div>
+            <div class="flex-grow-1">
+              <div class="fw-semibold small text-primary mb-1">
+                ${ getAiModel() === 'grok' ? '⚡ Grok' : '🌟 Gemini'} · Based on ${courseNames.length} enrolled course(s)
+              </div>
+              <div class="chat-bubble">${recs}</div>
             </div>
-            <div class="chat-bubble">${recs}</div>
-          </div>
-        </div>`;
+          </div>`;
     } catch (e) {
       document.getElementById('recAnswer').innerHTML =
         `<div class="alert alert-danger small">Failed to get recommendations.</div>`;
@@ -288,33 +375,132 @@
     btn.innerHTML = '<i class="bi bi-stars me-2"></i>Get My Recommendations';
   }
 
-  // ── Feature 3: Quiz Generator ─────────────────────────
+  // ── Feature 3: Interactive Live Quiz ─────────────────────
+  let quizQuestions = [], quizIndex = 0, quizScore = 0, quizTopic = '';
+
   async function generateQuiz() {
     const topic = document.getElementById('quizTopic').value.trim();
     if (!topic) { alert('Please enter a topic'); return; }
+    quizTopic = topic;
 
     const btn = document.getElementById('quizBtn');
     btn.disabled = true;
     btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Generating...';
-    showLoading('quizAnswer');
+    document.getElementById('quizError').classList.add('d-none');
 
     try {
-      const quiz = await aiGenerateQuiz(topic);
-      document.getElementById('quizAnswer').classList.remove('d-none');
-      document.getElementById('quizAnswer').innerHTML = `
-        <div class="d-flex justify-content-between align-items-center mb-2">
-          <div class="fw-semibold small text-primary">📝 Quiz: ${topic}</div>
-          <button class="btn btn-sm btn-outline-primary" onclick="copyQuiz()">
-            <i class="bi bi-clipboard me-1"></i>Copy
-          </button>
-        </div>
-        <div class="quiz-box" id="quizText">${quiz}</div>`;
+      const raw = await aiGenerateQuiz(topic);
+      if (raw.startsWith('ERROR:')) {
+        document.getElementById('quizError').classList.remove('d-none');
+        document.getElementById('quizError').innerHTML = `<div class="alert alert-warning small">${formatAiError(raw)}</div>`;
+        return;
+      }
+      // Strip possible markdown code fences
+      const json = raw.replace(/```json|```/g, '').trim();
+      quizQuestions = JSON.parse(json);
+      quizIndex = 0; quizScore = 0;
+      showQuestion();
     } catch (e) {
-      document.getElementById('quizAnswer').innerHTML =
-        `<div class="alert alert-danger small">Failed to generate quiz.</div>`;
+      document.getElementById('quizError').classList.remove('d-none');
+      document.getElementById('quizError').innerHTML = `<div class="alert alert-danger small">Failed to parse quiz. Try again.</div>`;
     }
     btn.disabled = false;
-    btn.innerHTML = '<i class="bi bi-lightning-fill me-1"></i> Generate Quiz';
+    btn.innerHTML = '<i class="bi bi-lightning-fill me-1"></i> Start Quiz';
+  }
+
+  function showQuestion() {
+    const q = quizQuestions[quizIndex];
+    const total = quizQuestions.length;
+
+    document.getElementById('quizSetup').classList.add('d-none');
+    document.getElementById('quizResult').classList.add('d-none');
+    document.getElementById('quizLive').classList.remove('d-none');
+
+    document.getElementById('quizLiveTitle').textContent = `📝 ${quizTopic} Quiz · ${getAiModel() === 'grok' ? '⚡ Grok' : '✦ Gemini'}`;
+    document.getElementById('quizCounter').textContent = `${quizIndex + 1} / ${total}`;
+    document.getElementById('quizProgressFill').style.width = `${(quizIndex / total) * 100}%`;
+    document.getElementById('quizQuestionText').textContent = `Q${quizIndex + 1}. ${q.question}`;
+    document.getElementById('quizFeedback').classList.add('d-none');
+    document.getElementById('quizNextBtn').classList.add('d-none');
+
+    const optDiv = document.getElementById('quizOptions');
+    optDiv.innerHTML = Object.entries(q.options).map(([key, val]) =>
+      `<div class="quiz-option" id="opt-${key}" onclick="selectAnswer('${key}')">
+        <div class="opt-key">${key}</div>
+        <div>${val}</div>
+      </div>`
+    ).join('');
+  }
+
+  function selectAnswer(chosen) {
+    const q = quizQuestions[quizIndex];
+    const correct = q.answer;
+    // Disable all options
+    document.querySelectorAll('.quiz-option').forEach(el => el.classList.add('disabled'));
+    // Mark correct / wrong
+    document.getElementById(`opt-${correct}`).classList.add('correct');
+    if (chosen !== correct) {
+      document.getElementById(`opt-${chosen}`).classList.add('wrong');
+    } else {
+      quizScore++;
+    }
+    // Feedback
+    const fb = document.getElementById('quizFeedback');
+    fb.classList.remove('d-none');
+    if (chosen === correct) {
+      fb.className = 'mt-3 p-3 rounded-3 small bg-success bg-opacity-10 text-success';
+      fb.innerHTML = '✅ Correct!';
+    } else {
+      fb.className = 'mt-3 p-3 rounded-3 small bg-danger bg-opacity-10 text-danger';
+      fb.innerHTML = `❌ Wrong. Correct answer: <strong>${correct}) ${q.options[correct]}</strong>`;
+    }
+    // Next / Finish
+    const nextBtn = document.getElementById('quizNextBtn');
+    nextBtn.classList.remove('d-none');
+    nextBtn.textContent = quizIndex + 1 < quizQuestions.length ? 'Next →' : 'See Results';
+  }
+
+  function nextQuestion() {
+    quizIndex++;
+    if (quizIndex < quizQuestions.length) {
+      showQuestion();
+    } else {
+      showResult();
+    }
+  }
+
+  function showResult() {
+    document.getElementById('quizLive').classList.add('d-none');
+    document.getElementById('quizResult').classList.remove('d-none');
+
+    const pct = (quizScore / quizQuestions.length) * 100;
+    const circle = document.getElementById('scoreCircle');
+    circle.style.background = pct >= 80 ? '#f0fdf4' : pct >= 50 ? '#fefce8' : '#fef2f2';
+    circle.style.border = `4px solid ${pct >= 80 ? '#16a34a' : pct >= 50 ? '#ca8a04' : '#dc2626'}`;
+    document.getElementById('scoreNum').textContent = quizScore;
+    document.getElementById('scoreNum').style.color = pct >= 80 ? '#16a34a' : pct >= 50 ? '#ca8a04' : '#dc2626';
+    document.getElementById('scoreTitle').textContent = pct >= 80 ? '🎉 Excellent!' : pct >= 50 ? '👍 Good effort!' : '💪 Keep practicing!';
+    document.getElementById('scoreMsg').textContent = `You scored ${quizScore} out of ${quizQuestions.length} on ${quizTopic}.`;
+
+    // Review
+    document.getElementById('quizReview').innerHTML = quizQuestions.map((q, i) =>
+      `<div class="mb-3 p-3 rounded-3 border">
+        <p class="fw-semibold small mb-1">Q${i+1}. ${q.question}</p>
+        <p class="small mb-0 text-success">✅ ${q.answer}) ${q.options[q.answer]}</p>
+      </div>`
+    ).join('');
+  }
+
+  function retryQuiz() {
+    quizIndex = 0; quizScore = 0;
+    showQuestion();
+  }
+
+  function newQuiz() {
+    document.getElementById('quizResult').classList.add('d-none');
+    document.getElementById('quizLive').classList.add('d-none');
+    document.getElementById('quizSetup').classList.remove('d-none');
+    document.getElementById('quizTopic').value = '';
   }
 
   function quickQuiz(topic) {
@@ -322,10 +508,10 @@
     generateQuiz();
   }
 
-  function copyQuiz() {
-    const text = document.getElementById('quizText')?.textContent;
-    if (text) navigator.clipboard.writeText(text)
-      .then(() => alert('Quiz copied to clipboard!'));
+  function formatAiError(msg) {
+    if (msg.includes('QUOTA_EXCEEDED'))
+      return '⚠️ Gemini API quota exhausted. Get a new key from <a href="https://aistudio.google.com/app/apikey" target="_blank">Google AI Studio</a> and update <code>application.properties</code>.';
+    return '⚠️ AI error: ' + msg.replace('ERROR:', '');
   }
 </script>
 </body>

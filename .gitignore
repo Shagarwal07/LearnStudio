@@ -32,3 +32,6 @@ backend-run.log
 # Node (if used locally)
 node_modules/
 package-lock.json
+
+# Local duplicate folder
+LearnStudio/

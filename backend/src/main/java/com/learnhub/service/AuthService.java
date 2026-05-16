@@ -53,32 +53,58 @@ public class AuthService {
 
     public AuthResponse loginWithGoogle(String credential) {
         try {
-            GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(
-                    new NetHttpTransport(), GsonFactory.getDefaultInstance())
-                    .setAudience(Collections.singletonList(googleClientId))
-                    .build();
-
-            GoogleIdToken idToken = verifier.verify(credential);
-            if (idToken == null) throw new RuntimeException("Invalid Google token");
-
-            GoogleIdToken.Payload payload = idToken.getPayload();
+            GoogleIdToken.Payload payload = verifyGoogleToken(credential);
             String email = payload.getEmail();
-            String name  = (String) payload.get("name");
 
-            User user = userRepository.findByEmail(email).orElseGet(() -> {
-                User newUser = User.builder()
-                        .name(name != null ? name : email)
-                        .email(email)
-                        .password(passwordEncoder.encode(java.util.UUID.randomUUID().toString()))
-                        .role(User.Role.STUDENT)
-                        .build();
-                return userRepository.save(newUser);
-            });
+            // LOGIN ONLY — user must already exist in DB
+            User user = userRepository.findByEmail(email)
+                    .orElseThrow(() -> new RuntimeException("NOT_REGISTERED"));
 
             String token = jwtUtil.generateToken(user.getEmail());
             return new AuthResponse(token, user.getName(), user.getEmail(), user.getRole().name());
+        } catch (RuntimeException e) {
+            throw e;
         } catch (Exception e) {
             throw new RuntimeException("Google login failed: " + e.getMessage());
         }
+    }
+
+    public AuthResponse registerWithGoogle(String credential, String role) {
+        try {
+            GoogleIdToken.Payload payload = verifyGoogleToken(credential);
+            String email = payload.getEmail();
+            String name  = (String) payload.get("name");
+
+            if (userRepository.existsByEmail(email))
+                throw new RuntimeException("Email already registered. Please sign in instead.");
+
+            User.Role userRole = (role != null && role.equalsIgnoreCase("INSTRUCTOR"))
+                    ? User.Role.INSTRUCTOR : User.Role.STUDENT;
+
+            User user = User.builder()
+                    .name(name != null ? name : email)
+                    .email(email)
+                    .password(passwordEncoder.encode(java.util.UUID.randomUUID().toString()))
+                    .role(userRole)
+                    .build();
+            userRepository.save(user);
+
+            String token = jwtUtil.generateToken(user.getEmail());
+            return new AuthResponse(token, user.getName(), user.getEmail(), user.getRole().name());
+        } catch (RuntimeException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new RuntimeException("Google registration failed: " + e.getMessage());
+        }
+    }
+
+    private GoogleIdToken.Payload verifyGoogleToken(String credential) throws Exception {
+        GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(
+                new NetHttpTransport(), GsonFactory.getDefaultInstance())
+                .setAudience(Collections.singletonList(googleClientId))
+                .build();
+        GoogleIdToken idToken = verifier.verify(credential);
+        if (idToken == null) throw new RuntimeException("Invalid Google token");
+        return idToken.getPayload();
     }
 }

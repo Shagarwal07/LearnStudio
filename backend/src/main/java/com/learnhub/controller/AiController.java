@@ -14,35 +14,28 @@ public class AiController {
 
     private final GeminiService geminiService;
 
-    // POST /api/ai/doubt
-    // Body: { "question": "What is React Hook?", "courseName": "Full Stack" }
     @PostMapping("/doubt")
-    public ResponseEntity<Map<String, String>> solveDoubt(
-            @RequestBody Map<String, String> body) {
+    public ResponseEntity<Map<String, String>> solveDoubt(@RequestBody Map<String, String> body) {
         String answer = geminiService.solveDoubt(
                 body.get("question"),
-                body.getOrDefault("courseName", "Programming"));
+                body.getOrDefault("courseName", "Programming"),
+                body.getOrDefault("model", "gemini"));
         return ResponseEntity.ok(Map.of("answer", answer));
     }
 
-    // POST /api/ai/recommend
-    // Body: { "enrolledCourses": ["React", "Java"] }
     @PostMapping("/recommend")
-    public ResponseEntity<Map<String, String>> recommend(
-            @RequestBody Map<String, Object> body) {
+    public ResponseEntity<Map<String, String>> recommend(@RequestBody Map<String, Object> body) {
         @SuppressWarnings("unchecked")
         List<String> courses = (List<String>) body.getOrDefault("enrolledCourses", List.of());
-        String recommendations = geminiService.recommendCourses(courses);
-        return ResponseEntity.ok(Map.of("recommendations", recommendations));
+        String model = (String) body.getOrDefault("model", "gemini");
+        return ResponseEntity.ok(Map.of("recommendations", geminiService.recommendCourses(courses, model)));
     }
 
-    // POST /api/ai/quiz
-    // Body: { "topic": "React Hooks" }
     @PostMapping("/quiz")
-    public ResponseEntity<Map<String, String>> generateQuiz(
-            @RequestBody Map<String, String> body) {
+    public ResponseEntity<Map<String, String>> generateQuiz(@RequestBody Map<String, String> body) {
         String quiz = geminiService.generateQuiz(
-                body.getOrDefault("topic", "Programming"));
+                body.getOrDefault("topic", "Programming"),
+                body.getOrDefault("model", "gemini"));
         return ResponseEntity.ok(Map.of("quiz", quiz));
     }
 }

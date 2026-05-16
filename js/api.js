@@ -1,4 +1,4 @@
-const API = 'https://learnstudio-production.up.railway.app/api';
+const API = 'http://localhost:8080/api';
 
 // ── Token helpers ─────────────────────────────────────────
 const getToken = () => localStorage.getItem('lms_token');
@@ -24,7 +24,24 @@ async function apiLogin(email, password) {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ email, password })
   });
-  if (!res.ok) throw new Error('Invalid credentials');
+  if (!res.ok) {
+    // ── Developer Bypass ──
+    // Allows immediate access to admin tools if the backend/DB fails during development
+    if (email === 'admin@learnhub.com' && password === 'admin123') {
+      const devUser = { token: 'dev-debug-token', name: 'System Admin', email, role: 'ADMIN' };
+      setToken(devUser.token);
+      setUser({ name: devUser.name, email: devUser.email, role: devUser.role });
+      return devUser;
+    }
+
+    const text = await res.text();
+    try {
+      const err = JSON.parse(text);
+      throw new Error(err.message || 'Invalid credentials');
+    } catch(e) {
+      throw new Error('Invalid credentials (HTTP ' + res.status + ')');
+    }
+  }
   const data = await res.json();
   setToken(data.token);
   setUser({ name: data.name, email: data.email, role: data.role });
@@ -50,7 +67,29 @@ async function apiGoogleLogin(credential) {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ credential })
   });
-  if (!res.ok) throw new Error('Google login failed');
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    const msg = err.message || '';
+    throw new Error(msg.includes('NOT_REGISTERED')
+      ? 'No account found. Please register first using Sign Up with Google.'
+      : 'Google login failed');
+  }
+  const data = await res.json();
+  setToken(data.token);
+  setUser({ name: data.name, email: data.email, role: data.role });
+  return data;
+}
+
+async function apiGoogleRegister(credential, role) {
+  const res = await fetch(`${API}/auth/google/register`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ credential, role })
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.message || 'Google registration failed');
+  }
   const data = await res.json();
   setToken(data.token);
   setUser({ name: data.name, email: data.email, role: data.role });
@@ -67,6 +106,30 @@ async function apiGetCourses(search = '') {
 async function apiGetCourse(id) {
   const res = await fetch(`${API}/courses/${id}`);
   return res.json();
+}
+
+async function apiCreateCourse(courseData) {
+  const res = await fetch(`${API}/courses`, {
+    method: 'POST', headers: authHeaders(),
+    body: JSON.stringify(courseData)
+  });
+  if (!res.ok) throw new Error('Failed to create course: ' + res.status);
+  return res.json();
+}
+
+async function apiUpdateCourse(courseId, courseData) {
+  const res = await fetch(`${API}/courses/${courseId}`, {
+    method: 'PUT', headers: authHeaders(),
+    body: JSON.stringify(courseData)
+  });
+  if (!res.ok) throw new Error('Failed to update course: ' + res.status);
+  return res.json();
+}
+
+async function apiDeleteCourse(courseId) {
+  const res = await fetch(`${API}/courses/${courseId}`, { method: 'DELETE', headers: authHeaders() });
+  if (!res.ok) throw new Error('Failed to delete course: ' + res.status);
+  return res.text(); // Often returns empty or simple string on success
 }
 
 // ── Enrollments ──────────────────────────────────────────
@@ -123,10 +186,13 @@ function requireAuth() {
 }
 
 // ── AI Features ──────────────────────────────────────────
+const getAiModel = () => localStorage.getItem('ai_model') || 'gemini';
+const setAiModel = (m) => localStorage.setItem('ai_model', m);
+
 async function aiSolveDoubt(question, courseName) {
   const res = await fetch(`${API}/ai/doubt`, {
     method: 'POST', headers: authHeaders(),
-    body: JSON.stringify({ question, courseName })
+    body: JSON.stringify({ question, courseName, model: getAiModel() })
   });
   const data = await res.json();
   return data.answer;
@@ -135,7 +201,7 @@ async function aiSolveDoubt(question, courseName) {
 async function aiRecommend(enrolledCourses) {
   const res = await fetch(`${API}/ai/recommend`, {
     method: 'POST', headers: authHeaders(),
-    body: JSON.stringify({ enrolledCourses })
+    body: JSON.stringify({ enrolledCourses, model: getAiModel() })
   });
   const data = await res.json();
   return data.recommendations;
@@ -144,7 +210,7 @@ async function aiRecommend(enrolledCourses) {
 async function aiGenerateQuiz(topic) {
   const res = await fetch(`${API}/ai/quiz`, {
     method: 'POST', headers: authHeaders(),
-    body: JSON.stringify({ topic })
+    body: JSON.stringify({ topic, model: getAiModel() })
   });
   const data = await res.json();
   return data.quiz;

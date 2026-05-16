@@ -36,7 +36,10 @@
     .input-group:focus-within .btn-outline-secondary { border-color: #4f46e5; }
     .btn-submit { background: #4f46e5; border: none; border-radius: 8px; padding: .7rem; font-weight: 600; }
     .btn-submit:hover { background: #3730a3; }
-    .alert-inline { font-size: .85rem; border-radius: 8px; padding: .6rem .9rem; }
+    .role-card { border: 2px solid #e2e8f0; border-radius: 12px; padding: 1.2rem; cursor: pointer; transition: all .2s; text-align:center; }
+    .role-card:hover { border-color: #4f46e5; background: #f5f3ff; }
+    .role-card.selected { border-color: #4f46e5; background: #f5f3ff; }
+    .role-card .role-icon { font-size: 2rem; margin-bottom: .4rem; }
   </style>
 </head>
 <body>
@@ -72,8 +75,8 @@
         <!-- ── Login ── -->
         <div class="tab-pane fade show active" id="loginPane">
 
-          <!-- Google Sign-In -->
-          <button class="google-btn mb-1" id="googleSignInBtn" onclick="triggerGoogleSignIn()">
+          <!-- Google Sign-In (login only — must be registered) -->
+          <button class="google-btn mb-1" id="googleSignInBtn" onclick="triggerGoogleLogin()">
             <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google"/>
             Continue with Google
           </button>
@@ -120,7 +123,8 @@
         <!-- ── Register ── -->
         <div class="tab-pane fade" id="registerPane">
 
-          <button class="google-btn mb-1" onclick="triggerGoogleSignIn()">
+          <!-- Google Sign-Up (shows role picker first) -->
+          <button class="google-btn mb-1" onclick="openRolePicker()">
             <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google"/>
             Sign up with Google
           </button>
@@ -185,9 +189,47 @@
   </div>
 </div>
 
+<!-- Role Picker Modal (Google Sign-Up) -->
+<div class="modal fade" id="roleModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered" style="max-width:420px">
+    <div class="modal-content rounded-4 border-0 shadow-lg p-2">
+      <div class="modal-header border-0 pb-0">
+        <h6 class="modal-title fw-bold">Choose your role</h6>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <p class="text-muted small mb-3">How do you want to use LearnHub?</p>
+        <div class="row g-3">
+          <div class="col-6">
+            <div class="role-card" id="roleStudent" onclick="selectRole('STUDENT')">
+              <div class="role-icon">📚</div>
+              <div class="fw-semibold small">Learn new skills</div>
+              <div class="text-muted" style="font-size:.78rem">Student</div>
+            </div>
+          </div>
+          <div class="col-6">
+            <div class="role-card" id="roleInstructor" onclick="selectRole('INSTRUCTOR')">
+              <div class="role-icon">🎓</div>
+              <div class="fw-semibold small">Teach &amp; earn</div>
+              <div class="text-muted" style="font-size:.78rem">Instructor</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer border-0 pt-0">
+        <button class="btn btn-primary w-100 fw-semibold" id="continueGoogleBtn"
+                onclick="triggerGoogleRegister()" disabled>
+          <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"
+               style="width:18px;margin-right:8px"/>Continue with Google
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- Hidden Google One Tap div -->
 <div id="g_id_onload"
-     data-client_id="YOUR_GOOGLE_CLIENT_ID_HERE"
+     data-client_id="181483437903-hc2oi74307lk305r5ejj1gohcdm1v52b.apps.googleusercontent.com"
      data-callback="handleGoogleCredential"
      data-auto_prompt="false">
 </div>
@@ -257,33 +299,76 @@
     }
   });
 
-  // ── Google Sign-In ───────────────────────────────────
-  function triggerGoogleSignIn() {
-    if (typeof google === 'undefined') {
-      showError('Google Sign-In is not available. Check your internet connection.');
-      return;
-    }
+  // ── Google: Login (must already be registered) ────────
+  function triggerGoogleLogin() {
+    if (typeof google === 'undefined') { showError('Google Sign-In unavailable.'); return; }
     google.accounts.id.initialize({
-      client_id: 'YOUR_GOOGLE_CLIENT_ID_HERE',
-      callback: handleGoogleCredential
+      client_id: '181483437903-hc2oi74307lk305r5ejj1gohcdm1v52b.apps.googleusercontent.com',
+      callback: handleGoogleLogin
     });
-    google.accounts.id.prompt((notification) => {
-      if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
-        // Fallback: render a popup
-        google.accounts.id.renderButton(
-          document.getElementById('googleSignInBtn'),
-          { theme: 'outline', size: 'large', width: 400 }
-        );
-      }
+    google.accounts.id.prompt(n => {
+      if (n.isNotDisplayed() || n.isSkippedMoment())
+        google.accounts.id.renderButton(document.getElementById('googleSignInBtn'),
+          { theme: 'outline', size: 'large', width: 400 });
     });
   }
 
-  async function handleGoogleCredential(response) {
+  async function handleGoogleLogin(response) {
     try {
       const res = await apiGoogleLogin(response.credential);
       window.location.href = res.role === 'INSTRUCTOR' ? 'teacher-dashboard.html' : 'dashboard.html';
     } catch (err) {
-      showError('Google login failed: ' + err.message);
+      showError(err.message);
+    }
+  }
+
+  // ── Google: Register (role picker first) ─────────────
+  let selectedRole = null, pendingCredential = null;
+  const roleModal = new bootstrap.Modal(document.getElementById('roleModal'));
+
+  function openRolePicker() {
+    selectedRole = null;
+    pendingCredential = null;
+    document.getElementById('roleStudent').classList.remove('selected');
+    document.getElementById('roleInstructor').classList.remove('selected');
+    document.getElementById('continueGoogleBtn').disabled = true;
+    roleModal.show();
+  }
+
+  function selectRole(role) {
+    selectedRole = role;
+    document.getElementById('roleStudent').classList.toggle('selected', role === 'STUDENT');
+    document.getElementById('roleInstructor').classList.toggle('selected', role === 'INSTRUCTOR');
+    document.getElementById('continueGoogleBtn').disabled = false;
+  }
+
+  function triggerGoogleRegister() {
+    if (!selectedRole) return;
+    if (typeof google === 'undefined') { showError('Google Sign-In unavailable.'); return; }
+    roleModal.hide();
+    google.accounts.id.initialize({
+      client_id: '181483437903-hc2oi74307lk305r5ejj1gohcdm1v52b.apps.googleusercontent.com',
+      callback: handleGoogleRegister
+    });
+    google.accounts.id.prompt(n => {
+      if (n.isNotDisplayed() || n.isSkippedMoment()) {
+        // One Tap blocked — use popup flow
+        google.accounts.oauth2.initTokenClient({
+          client_id: '181483437903-hc2oi74307lk305r5ejj1gohcdm1v52b.apps.googleusercontent.com',
+          scope: 'email profile',
+          callback: () => {}
+        });
+        showError('Please allow popups and try again, or use email registration.');
+      }
+    });
+  }
+
+  async function handleGoogleRegister(response) {
+    try {
+      const res = await apiGoogleRegister(response.credential, selectedRole);
+      window.location.href = res.role === 'INSTRUCTOR' ? 'teacher-dashboard.html' : 'dashboard.html';
+    } catch (err) {
+      showError(err.message);
     }
   }
 </script>

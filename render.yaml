@@ -1,0 +1,26 @@
+services:
+  - type: web
+    name: learnhub-backend
+    runtime: docker
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: ./backend
+    plan: free
+    envVars:
+      - key: PORT
+        value: 8080
+      - key: SPRING_DATASOURCE_URL
+        value: jdbc:mysql://mysql-34-shubhamagarwal2073.c.aivencloud.com:20726/defaultdb?useSSL=true&requireSSL=true&serverTimezone=UTC&allowPublicKeyRetrieval=true
+      - key: SPRING_DATASOURCE_USERNAME
+        value: avnadmin
+      - key: SPRING_DATASOURCE_PASSWORD
+        sync: false        # set manually in Render dashboard (secret)
+      - key: JWT_SECRET
+        sync: false        # set manually in Render dashboard (secret)
+      - key: GEMINI_API_KEY
+        sync: false        # set manually in Render dashboard (secret)
+      - key: GOOGLE_CLIENT_ID
+        value: 181483437903-hc2oi74307lk305r5ejj1gohcdm1v52b.apps.googleusercontent.com
+      - key: GROK_API_KEY
+        sync: false
+      - key: GROK_MODEL
+        value: grok-3-mini

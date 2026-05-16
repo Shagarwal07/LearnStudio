@@ -13,10 +13,11 @@
 <!-- Sidebar -->
 <aside class="sidebar" id="sidebar">
   <div class="brand">Learn<span>Hub</span></div>
-  <nav class="nav flex-column">
+  <nav class="nav flex-column" id="dashboardSidebarNav">
     <a href="dashboard.html" class="nav-link active"><i class="bi bi-grid-fill"></i> Dashboard</a>
     <a href="courses.html" class="nav-link"><i class="bi bi-play-circle-fill"></i> My Courses</a>
     <a href="courses.html" class="nav-link"><i class="bi bi-compass-fill"></i> Explore</a>
+    <!-- Admin link injected by JS -->
     <a href="ai.html" class="nav-link"><i class="bi bi-robot"></i> AI Assistant</a>
     <a href="#" class="nav-link"><i class="bi bi-award-fill"></i> Certificates</a>
     <hr class="border-secondary my-2"/>
@@ -197,6 +198,16 @@
       document.getElementById('userAvatar').textContent = user.name.charAt(0).toUpperCase();
       document.getElementById('statRole').textContent = user.role;
 
+      // Update "My Courses" link in sidebar
+      const myCoursesLink = document.querySelector('#dashboardSidebarNav a[href="courses.html"]');
+      if (myCoursesLink) {
+        myCoursesLink.href = 'my-courses.html';
+      }
+      // Add Admin link if user is ADMIN
+      if (user.role === 'ADMIN') {
+        const adminPanelLink = `<a href="admin.html" class="nav-link"><i class="bi bi-shield-lock-fill"></i> Admin Panel</a>`;
+        document.getElementById('dashboardSidebarNav').insertAdjacentHTML('beforeend', adminPanelLink);
+      }
       document.getElementById('accountInfo').innerHTML = `
         <div class="d-flex flex-column gap-2">
           <div class="d-flex justify-content-between p-2 rounded" style="background:#f8fafc">
@@ -217,6 +228,16 @@
     // ── Load enrollments from Spring Boot ─────────────────
     const listEl = document.getElementById('enrolledList');
     try {
+      // If the user is an ADMIN, they don't have personal enrollments.
+      // We skip the fetch to prevent 403 Forbidden errors from the backend.
+      if (user.role === 'ADMIN') {
+        document.getElementById('statTotal').textContent = '0';
+        document.getElementById('statInProg').textContent = '0';
+        document.getElementById('statDone').textContent = '0';
+        listEl.innerHTML = `<div class="text-center py-5 text-muted">Admin View: No personal student enrollments.</div>`;
+        return;
+      }
+
       const enrollments = await apiMyEnrollments();
 
       if (!Array.isArray(enrollments) || enrollments.length === 0) {

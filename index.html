@@ -159,84 +159,7 @@
       </div>
       <a href="courses.html" class="btn btn-outline-primary">View All <i class="bi bi-arrow-right ms-1"></i></a>
     </div>
-    <div class="row g-4">
-      <!-- Card 1 -->
-      <div class="col-md-6 col-lg-3">
-        <div class="card course-card h-100">
-          <div class="course-thumb" style="background:linear-gradient(135deg,#4f46e5,#7c3aed)">💻</div>
-          <div class="card-body">
-            <span class="badge bg-primary badge-level mb-2">Beginner</span>
-            <h6 class="fw-bold">Full Stack Web Development</h6>
-            <div class="rating-stars mb-1">★★★★★ <span class="text-muted small">(2.4k)</span></div>
-            <div class="course-meta d-flex gap-3 mb-2">
-              <span><i class="bi bi-play-circle"></i> 120 lessons</span>
-              <span><i class="bi bi-clock"></i> 48h</span>
-            </div>
-            <div class="d-flex justify-content-between align-items-center mt-auto">
-              <span class="fw-bold text-primary fs-5">₹1,499</span>
-              <a href="login.html" class="btn btn-sm btn-primary">Enroll</a>
-            </div>
-          </div>
-        </div>
-      </div>
-      <!-- Card 2 -->
-      <div class="col-md-6 col-lg-3">
-        <div class="card course-card h-100">
-          <div class="course-thumb" style="background:linear-gradient(135deg,#0e7490,#06b6d4)">🤖</div>
-          <div class="card-body">
-            <span class="badge bg-warning text-dark badge-level mb-2">Intermediate</span>
-            <h6 class="fw-bold">Machine Learning A-Z</h6>
-            <div class="rating-stars mb-1">★★★★★ <span class="text-muted small">(1.8k)</span></div>
-            <div class="course-meta d-flex gap-3 mb-2">
-              <span><i class="bi bi-play-circle"></i> 95 lessons</span>
-              <span><i class="bi bi-clock"></i> 36h</span>
-            </div>
-            <div class="d-flex justify-content-between align-items-center mt-auto">
-              <span class="fw-bold text-primary fs-5">₹1,999</span>
-              <a href="login.html" class="btn btn-sm btn-primary">Enroll</a>
-            </div>
-          </div>
-        </div>
-      </div>
-      <!-- Card 3 -->
-      <div class="col-md-6 col-lg-3">
-        <div class="card course-card h-100">
-          <div class="course-thumb" style="background:linear-gradient(135deg,#7c3aed,#db2777)">🎨</div>
-          <div class="card-body">
-            <span class="badge bg-success badge-level mb-2">All Levels</span>
-            <h6 class="fw-bold">UI/UX Design Mastery</h6>
-            <div class="rating-stars mb-1">★★★★☆ <span class="text-muted small">(1.2k)</span></div>
-            <div class="course-meta d-flex gap-3 mb-2">
-              <span><i class="bi bi-play-circle"></i> 80 lessons</span>
-              <span><i class="bi bi-clock"></i> 28h</span>
-            </div>
-            <div class="d-flex justify-content-between align-items-center mt-auto">
-              <span class="fw-bold text-primary fs-5">₹1,299</span>
-              <a href="login.html" class="btn btn-sm btn-primary">Enroll</a>
-            </div>
-          </div>
-        </div>
-      </div>
-      <!-- Card 4 -->
-      <div class="col-md-6 col-lg-3">
-        <div class="card course-card h-100">
-          <div class="course-thumb" style="background:linear-gradient(135deg,#d97706,#f59e0b)">☁️</div>
-          <div class="card-body">
-            <span class="badge bg-danger badge-level mb-2">Advanced</span>
-            <h6 class="fw-bold">AWS Cloud Practitioner</h6>
-            <div class="rating-stars mb-1">★★★★★ <span class="text-muted small">(980)</span></div>
-            <div class="course-meta d-flex gap-3 mb-2">
-              <span><i class="bi bi-play-circle"></i> 65 lessons</span>
-              <span><i class="bi bi-clock"></i> 22h</span>
-            </div>
-            <div class="d-flex justify-content-between align-items-center mt-auto">
-              <span class="fw-bold text-primary fs-5">₹2,499</span>
-              <a href="login.html" class="btn btn-sm btn-primary">Enroll</a>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+    <div class="row g-4" id="popularCoursesRow"></div>
   </div>
 </section>
 
@@ -342,13 +265,80 @@
       </div>
     </div>
     <hr class="border-secondary mt-4"/>
-    <div class="text-center small">© 2025 LearnHub. All rights reserved. Built with ❤️ for learners.</div>
+    <div class="text-center small">© 2026 LearnHub. Made with Love <i class="bi bi-heart-fill text-danger"></i> for learners.</div>
   </div>
 </footer>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="js/api.js"></script>
 <script>
+  const THUMB_META = [
+    { bg: 'linear-gradient(135deg,#4f46e5,#7c3aed)', icon: '💻' },
+    { bg: 'linear-gradient(135deg,#0e7490,#06b6d4)', icon: '🤖' },
+    { bg: 'linear-gradient(135deg,#7c3aed,#db2777)', icon: '🎨' },
+    { bg: 'linear-gradient(135deg,#d97706,#f59e0b)', icon: '☁️' },
+    { bg: 'linear-gradient(135deg,#16a34a,#4ade80)', icon: '📱' }
+  ];
+
+  async function loadPopularCourses() {
+    const container = document.getElementById('popularCoursesRow');
+    try {
+      const courses = await apiGetCourses();
+      // Display top 4 courses for the homepage
+      const popular = courses.slice(0, 4);
+
+      if (popular.length === 0) {
+        container.innerHTML = '<div class="col-12 text-center text-muted py-5">No courses available at the moment. Check back later!</div>';
+        return;
+      }
+
+      container.innerHTML = popular.map((c, i) => {
+        let priceHtml = '';
+        let freeBadge = '';
+
+        // Ensure price is treated as a number
+        const priceValue = (c.price !== undefined && c.price !== null) ? Number(c.price) : 0;
+
+        if (priceValue === 0) {
+          // Logic for free courses: show a random original price and a "Free Now" badge
+          const fakePrice = Math.floor(Math.random() * (1999 - 1499 + 1)) + 1499;
+          priceHtml = `<span class="text-decoration-line-through text-muted me-2" style="font-size: 0.9rem;">₹${fakePrice}</span><span class="text-success">Free</span>`;
+          freeBadge = `<span class="badge bg-success badge-level ms-2">Free Now</span>`;
+        } else {
+          priceHtml = `₹${priceValue.toLocaleString('en-IN')}`;
+        }
+
+        const meta = THUMB_META[i % THUMB_META.length];
+        return `
+          <div class="col-md-6 col-lg-3">
+            <div class="card course-card h-100">
+              <a href="course-detail.html?id=${c.id}" class="text-decoration-none">
+                <div class="course-thumb" style="background:${meta.bg}">${meta.icon}</div>
+              </a>
+              <div class="card-body d-flex flex-column">
+                <div class="d-flex align-items-center mb-2">
+                  <span class="badge bg-primary badge-level">${c.level || 'Beginner'}</span>
+                  ${freeBadge}
+                </div>
+                <h6 class="fw-bold mb-1">${c.title}</h6>
+                <div class="rating-stars mb-1">${c.rating || '★★★★★'} <span class="text-muted small">(${c.reviews || '0'})</span></div>
+                <div class="course-meta d-flex gap-3 mb-2">
+                  <span><i class="bi bi-play-circle"></i> ${c.lessons || 0} lessons</span>
+                  <span><i class="bi bi-clock"></i> ${c.hours || 0}h</span>
+                </div>
+                <div class="d-flex justify-content-between align-items-center mt-auto">
+                  <span class="fw-bold text-primary fs-5">${priceHtml}</span>
+                  <a href="course-detail.html?id=${c.id}" class="btn btn-sm btn-primary">Enroll</a>
+                </div>
+              </div>
+            </div>
+          </div>`;
+      }).join('');
+    } catch (err) {
+      container.innerHTML = '<div class="col-12 text-center text-danger py-5">Error loading courses. Please ensure the server is running on port 8080.</div>';
+    }
+  }
+
   const nav = document.getElementById('navActions');
   if (getToken()) {
     const user = getUser();
@@ -364,6 +354,8 @@
       <a href="login.html" class="btn btn-outline-light btn-sm px-3">Login</a>
       <a href="login.html" class="btn btn-primary btn-sm px-3">Get Started</a>`;
   }
+
+  loadPopularCourses();
 </script>
 </body>
 </html>
