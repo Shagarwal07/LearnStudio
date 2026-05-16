@@ -462,10 +462,11 @@ async function loadCourseAndProgress() {
     
     // 2. Check enrollment from same API as dashboard
     const enrollments = await apiMyEnrollments();
-    const isEnrolled = enrollments.some(e => {
+    const enrollment = enrollments.find(e => {
         const enrolledCid = e.course?.id || e.courseId || e.id;
         return Number(enrolledCid) === cid;
     });
+    const isEnrolled = !!enrollment;
 
     const title = course.title;
     document.getElementById('course-hero-title').textContent = title;
@@ -502,13 +503,20 @@ async function loadCourseAndProgress() {
       console.log("User enrolled");
       setupEnrollButtons(course.id, price, true);
 
-      // Fetch specific progress details (lessons, unlocked status, etc.)
-      const progressData = await apiGetCourseProgress(cid);
-      _lessons = progressData.lessons || [];
-      setProgress(progressData.completedLessons || 0, progressData.totalLessons || 0, progressData.progress || 0);
-      const next = _lessons.find(l => l.unlocked && !l.completed) || _lessons[0];
-      if (next) updatePlayer(next);
-      renderLessons(_lessons);
+      try {
+        // Fetch specific progress details (lessons, unlocked status, etc.)
+        const progressData = await apiGetCourseProgress(cid);
+        _lessons = progressData.lessons || [];
+        setProgress(progressData.completedLessons || 0, progressData.totalLessons || 0, progressData.progress || 0);
+        const next = _lessons.find(l => l.unlocked && !l.completed) || _lessons[0];
+        if (next) updatePlayer(next);
+        renderLessons(_lessons);
+      } catch (e) {
+        console.warn("Detailed progress endpoint not available, falling back to summary.");
+        // Fallback to basic enrollment data from the list
+        setProgress(enrollment.completedLessons || 0, enrollment.totalLessons || 0, enrollment.progress || 0);
+        lessonList.innerHTML = `<div class="alert alert-info border-0 small">Curriculum details are currently unavailable.</div>`;
+      }
     } else {
       // USER IS NOT ENROLLED
       console.log("User not enrolled yet");

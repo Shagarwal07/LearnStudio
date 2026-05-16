@@ -184,7 +184,7 @@ async function apiMyEnrollments() {
 }
 
 async function apiGetCourseProgress(courseId) {
-  const res = await fetch(`${API}/enrollments/${courseId}`, {
+  const res = await fetch(`${API}/enrollments/progress/${courseId}`, {
     method: 'GET',
     headers: authHeaders()
   });
