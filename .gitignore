@@ -25,6 +25,10 @@ server-manager.js
 start-manager.bat
 # Note: SETUP.bat is tracked — useful for fresh installs
 
+# Railway & Deployment Cleanup
+railway.json
+.railway/
+
 # Logs
 *.log
 backend-run.log
