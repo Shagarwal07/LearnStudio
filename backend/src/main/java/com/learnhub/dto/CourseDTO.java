@@ -5,6 +5,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import java.math.BigDecimal;
+import java.util.List;
 
 @Data
 public class CourseDTO {
@@ -19,4 +20,5 @@ public class CourseDTO {
     private String instructorName;
     private int totalLessons;
     private String previewVideoUrl;
+    private List<LessonDTO> lessons;
 }

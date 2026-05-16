@@ -126,6 +126,11 @@ async function apiGetCourses(search = '') {
   return await res.json();
 }
 
+async function apiGetCourseDetails(id) {
+  const res = await fetch(`${API}/courses/${id}`);
+  return res.json();
+}
+
 async function apiGetCourse(id) {
   const res = await fetch(`${API}/courses/${id}`);
   return res.json();

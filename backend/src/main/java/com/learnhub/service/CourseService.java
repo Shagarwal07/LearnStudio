@@ -1,8 +1,10 @@
 package com.learnhub.service;
 
 import com.learnhub.dto.CourseDTO;
+import com.learnhub.dto.LessonDTO;
 import com.learnhub.entity.Course;
 import com.learnhub.repository.CourseRepository;
+import com.learnhub.repository.LessonRepository;
 import com.learnhub.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -14,15 +16,28 @@ public class CourseService {
 
     private final CourseRepository courseRepository;
     private final UserRepository userRepository;
+    private final LessonRepository lessonRepository;
 
     public List<CourseDTO> getAllCourses() {
         return courseRepository.findAll().stream().map(this::toDTO).toList();
     }
 
     public CourseDTO getCourseById(Long id) {
-        return courseRepository.findById(id)
-                .map(this::toDTO)
+        Course course = courseRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Course not found"));
+        
+        CourseDTO dto = toDTO(course);
+        
+        // Fetch lessons separately to avoid LazyInitializationException
+        List<LessonDTO> lessons = lessonRepository.findByCourseIdOrderByPosition(id).stream()
+                .map(l -> LessonDTO.builder()
+                        .id(l.getId()).title(l.getTitle()).videoUrl(l.getVideoUrl())
+                        .duration(l.getDuration()).position(l.getPosition()).build())
+                .toList();
+        
+        dto.setLessons(lessons);
+        dto.setTotalLessons(lessons.size());
+        return dto;
     }
 
     public List<CourseDTO> searchCourses(String keyword) {

@@ -457,8 +457,9 @@ function renderPreviewVideo(url) {
 async function loadCourseAndProgress() {
   try {
     const cid = Number(courseId);
-    // 1. Always load general course info
-    const course = await apiGetCourse(cid);
+
+    // 1. Load course details (includes lessons)
+    const course = await apiGetCourseDetails(cid);
     
     // 2. Check enrollment from same API as dashboard
     const enrollments = await apiMyEnrollments();
@@ -490,7 +491,7 @@ async function loadCourseAndProgress() {
     document.getElementById('instructor-name-card').textContent = instrName;
     document.getElementById('instructor-avatar').textContent    = instrName.charAt(0).toUpperCase();
 
-    const totalLessonsCount = course.lessons || 0;
+    const totalLessonsCount = course.totalLessons || 0;
     document.getElementById('total-lessons-hero').textContent = totalLessonsCount;
     document.getElementById('detail-level').textContent       = course.level || '—';
     document.getElementById('detail-lessons').textContent     = totalLessonsCount + ' lessons';
@@ -522,12 +523,23 @@ async function loadCourseAndProgress() {
       console.log("User not enrolled yet");
       setupEnrollButtons(course.id, price, false);
       setProgress(0, totalLessonsCount, 0);
-      // Load a static/locked preview of lessons if possible, or show a message
-      lessonList.innerHTML = `<div class="text-center py-4">
-        <i class="bi bi-lock-fill fs-2 text-muted mb-2"></i>
-        <p class="small text-muted">Enroll in this course to access the curriculum and start learning.</p>
-        <button class="btn btn-primary btn-sm px-4" onclick="enrollFromDetail(${course.id}, '${course.title}')">Enroll Now</button>
-      </div>`;
+
+      // Render all 9 lessons from CourseDTO, but mark them as locked
+      if (course.lessons && course.lessons.length > 0) {
+          const lockedLessons = course.lessons.map(l => ({ ...l, unlocked: false, completed: false }));
+          renderLessons(lockedLessons);
+          
+          // Show a floating enrollment prompt over the list
+          const lockOverlay = document.createElement('div');
+          lockOverlay.className = "text-center py-3 bg-light rounded-3 mt-2 border";
+          lockOverlay.innerHTML = `
+            <p class="small text-muted mb-2"><i class="bi bi-lock-fill"></i> Curriculum is locked</p>
+            <button class="btn btn-primary btn-sm px-4" onclick="enrollFromDetail(${course.id}, '${course.title}')">Enroll to Unlock All Lessons</button>
+          `;
+          lessonList.appendChild(lockOverlay);
+      } else {
+          lessonList.innerHTML = `<div class="alert alert-info border-0 small">Curriculum is being updated.</div>`;
+      }
       
       // Disable completion button
       completeBtn.disabled = true;
