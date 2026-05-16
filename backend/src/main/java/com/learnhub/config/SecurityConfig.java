@@ -48,6 +48,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/health").permitAll()
 
                         .requestMatchers(HttpMethod.GET, "/api/courses/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/enrollments/progress/**").authenticated()
                         
                         .requestMatchers("/api/enrollments/**").authenticated()
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")

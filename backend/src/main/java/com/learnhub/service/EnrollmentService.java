@@ -55,7 +55,7 @@ public class EnrollmentService {
 
     public List<Map<String, Object>> getMyEnrollments(String userEmail) {
         User user = userRepository.findByEmail(userEmail)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
         return enrollmentRepository.findByUserId(user.getId()).stream()
                 .map(e -> {
                     Map<String, Object> map = new HashMap<>();
@@ -100,10 +100,10 @@ public class EnrollmentService {
 
     public CourseProgressDTO getCourseProgress(String userEmail, Long courseId) {
         User user = userRepository.findByEmail(userEmail)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
         Enrollment enrollment = enrollmentRepository
                 .findByUserIdAndCourseId(user.getId(), courseId)
-                .orElseThrow(() -> new RuntimeException("Enrollment not found"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Enrollment not found"));
 
         List<Lesson> courseLessons = lessonRepository.findByCourseIdOrderByPosition(courseId);
         Map<Long, LessonProgress> lessonProgressMap = lessonProgressRepository.findByEnrollmentId(enrollment.getId())
@@ -163,12 +163,12 @@ public class EnrollmentService {
 
     public CourseProgressDTO completeLesson(String userEmail, Long courseId, Long lessonId) {
         User user = userRepository.findByEmail(userEmail)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
         Enrollment enrollment = enrollmentRepository
                 .findByUserIdAndCourseId(user.getId(), courseId)
-                .orElseThrow(() -> new RuntimeException("Enrollment not found"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Enrollment not found"));
         Lesson lesson = lessonRepository.findByIdAndCourseId(lessonId, courseId)
-                .orElseThrow(() -> new RuntimeException("Lesson not found in this course"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Lesson not found in this course"));
 
         // Check if the lesson is unlocked before allowing completion
         List<Lesson> courseLessons = lessonRepository.findByCourseIdOrderByPosition(courseId);
@@ -179,7 +179,7 @@ public class EnrollmentService {
                     .map(LessonProgress::isCompleted)
                     .orElse(false);
             if (!previousLessonCompleted) {
-                throw new RuntimeException("Previous lesson must be completed first.");
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Previous lesson must be completed first.");
             }
         }
 
