@@ -18,6 +18,7 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import java.util.List;
+import org.springframework.beans.factory.annotation.Value;
 
 @Configuration
 @EnableWebSecurity
@@ -26,6 +27,9 @@ import java.util.List;
 public class SecurityConfig {
 
     private final JwtFilter jwtFilter;
+
+    @Value("${frontend.url:http://127.0.0.1:5500}")
+    private String frontendUrl;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -38,6 +42,7 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                 // Public endpoints
                 .requestMatchers("/api/auth/**").permitAll()
+                .requestMatchers("/api/health").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/courses/**").permitAll()
                 // Everything else needs JWT
                 .anyRequest().authenticated()
@@ -66,7 +71,8 @@ public class SecurityConfig {
             "http://127.0.0.1:3000",
             "https://learnstudio.netlify.app",
             "https://learnhub-frontend.netlify.app",
-            "https://learnstudio-1.onrender.com"
+            "https://learnstudio-1.onrender.com",
+            frontendUrl
         ));
         config.setAllowedMethods(List.of("GET","POST","PUT","DELETE","OPTIONS","PATCH"));
         config.setAllowedHeaders(List.of("*"));

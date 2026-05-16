@@ -1,5 +1,5 @@
 -- Clean lesson seed (run once)
--- Works for both local (lms_db) and Railway (railway)
+-- Works for both local (lms_db) and production environments
 
 INSERT INTO lessons (course_id, title, position, video_url, duration) VALUES
 (1, 'Introduction to HTML',            1, '', '15 min'),

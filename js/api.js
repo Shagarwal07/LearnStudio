@@ -2,6 +2,11 @@ const API = window.location.hostname === 'localhost' || window.location.hostname
   ? 'http://localhost:8080/api'
   : 'https://learnstudio-1.onrender.com/api';
 
+// Wake up Render backend on page load (free tier cold start)
+if (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+  fetch(`${API}/health`).catch(() => {});
+}
+
 // ── Token helpers ─────────────────────────────────────────
 const getToken = () => localStorage.getItem('lms_token');
 const setToken = (t) => localStorage.setItem('lms_token', t);
@@ -147,73 +152,33 @@ async function apiEnroll(courseId) {
       const err = JSON.parse(text);
       throw new Error(err.message || err.error || 'Enrollment failed: ' + res.status);
     } catch(e) {
-      throw new Error(text || 'Enrollment failed: ' + res.status);
+      throw new Error(text || 'Enrollment failed');
     }
   }
   return text ? JSON.parse(text) : {};
 }
 
-async function apiMyEnrollments() {
-  const res = await fetch(`${API}/enrollments/my`, { headers: authHeaders() });
-  if (!res.ok) throw new Error('Failed to fetch enrollments: ' + res.status);
-  return res.json();
-}
-
-// Reads persisted, per-user lesson progress for one enrolled course.
-async function apiGetCourseProgress(courseId) {
-  const res = await fetch(`${API}/enrollments/${courseId}/progress`, { headers: authHeaders() });
-  if (!res.ok) throw new Error('Failed to fetch course progress: ' + res.status);
-  return res.json();
-}
-
-// Marks a lesson complete and expects the backend to return refreshed course progress.
-async function apiCompleteLesson(courseId, lessonId) {
-  const res = await fetch(`${API}/enrollments/${courseId}/lessons/${lessonId}/complete`, {
-    method: 'POST',
-    headers: authHeaders()
-  });
-  if (!res.ok) throw new Error('Failed to complete lesson: ' + res.status);
-  return res.json();
-}
-
-// ── User ─────────────────────────────────────────────────
-async function apiGetMe() {
-  const res = await fetch(`${API}/users/me`, { headers: authHeaders() });
-  return res.json();
-}
-
-// ── Guard: redirect to login if not authenticated ────────
-function requireAuth() {
-  if (!getToken()) window.location.href = 'login.html';
-}
-
-// ── AI Features ──────────────────────────────────────────
-const getAiModel = () => localStorage.getItem('ai_model') || 'gemini';
-const setAiModel = (m) => localStorage.setItem('ai_model', m);
-
-async function aiSolveDoubt(question, courseName) {
+// ── AI ───────────────────────────────────────────────────
+async function apiAiSolveDoubt(question, courseName, model = 'gemini') {
   const res = await fetch(`${API}/ai/doubt`, {
     method: 'POST', headers: authHeaders(),
-    body: JSON.stringify({ question, courseName, model: getAiModel() })
+    body: JSON.stringify({ question, courseName, model })
   });
-  const data = await res.json();
-  return data.answer;
+  return res.json();
 }
 
-async function aiRecommend(enrolledCourses) {
+async function apiAiRecommend(enrolledCourses, model = 'gemini') {
   const res = await fetch(`${API}/ai/recommend`, {
     method: 'POST', headers: authHeaders(),
-    body: JSON.stringify({ enrolledCourses, model: getAiModel() })
+    body: JSON.stringify({ enrolledCourses, model })
   });
-  const data = await res.json();
-  return data.recommendations;
+  return res.json();
 }
 
-async function aiGenerateQuiz(topic) {
+async function apiAiQuiz(topic, model = 'gemini') {
   const res = await fetch(`${API}/ai/quiz`, {
     method: 'POST', headers: authHeaders(),
-    body: JSON.stringify({ topic, model: getAiModel() })
+    body: JSON.stringify({ topic, model })
   });
-  const data = await res.json();
-  return data.quiz;
+  return res.json();
 }

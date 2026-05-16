@@ -120,8 +120,8 @@ public class AdminController {
     */
 
     private long queryCount(Statement stmt, String sql) throws SQLException {
-        ResultSet rs = stmt.executeQuery(sql);
-        rs.next();
-        return rs.getLong(1);
+        try (ResultSet rs = stmt.executeQuery(sql)) {
+            return rs.next() ? rs.getLong(1) : 0L;
+        }
     }
 }

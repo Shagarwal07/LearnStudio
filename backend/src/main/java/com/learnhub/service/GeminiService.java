@@ -94,27 +94,20 @@ public class GeminiService {
         }
     }
 
-    // ── Features ──────────────────────────────────────────
+    // ── Helper Methods for AiController ───────────────────
     public String solveDoubt(String question, String courseName, String model) {
-        return ask(String.format(
-            "You are a helpful tutor for the course '%s'. " +
-            "Answer this student's question clearly and concisely in 3-5 lines: %s",
-            courseName, question), model);
+        String prompt = String.format("I am studying %s. Can you explain: %s", courseName, question);
+        return ask(prompt, model);
     }
 
     public String recommendCourses(List<String> enrolledCourses, String model) {
-        String enrolled = enrolledCourses.isEmpty() ? "none yet" : String.join(", ", enrolledCourses);
-        return ask(String.format(
-            "A student is enrolled in these courses: %s. " +
-            "Recommend 3 next courses they should take to advance their career. " +
-            "Format as a numbered list with course name and one-line reason. Keep it brief.", enrolled), model);
+        String prompt = "Based on these courses I've taken: " + String.join(", ", enrolledCourses) + 
+                        ". What should I learn next? Give me 3 suggestions.";
+        return ask(prompt, model);
     }
 
     public String generateQuiz(String topic, String model) {
-        return ask(String.format(
-            "Generate exactly 5 multiple choice questions about '%s'. " +
-            "Respond ONLY with a valid JSON array, no markdown, no explanation. " +
-            "Format: [{\"question\":\"...\",\"options\":{\"A\":\"...\",\"B\":\"...\",\"C\":\"...\",\"D\":\"...\"},\"answer\":\"A\"}]. " +
-            "Keep questions practical and beginner-friendly.", topic), model);
+        String prompt = "Generate a 3-question multiple choice quiz about " + topic + " with answers at the end.";
+        return ask(prompt, model);
     }
 }

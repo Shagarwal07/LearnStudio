@@ -83,8 +83,11 @@ Minor Project/
 | DELETE | /api/courses/{id}               | ADMIN    | Delete course       |
 | POST   | /api/enrollments/{courseId}     | STUDENT  | Enroll in course    |
 | GET    | /api/enrollments/my             | STUDENT  | My enrollments      |
-| PUT    | /api/enrollments/{id}/progress  | STUDENT  | Update progress     |
+| GET    | /api/enrollments/{id}/progress  | STUDENT  | Get course progress |
+| POST   | /api/enrollments/{id}/lessons/{lid}/complete | STUDENT | Complete lesson |
 | GET    | /api/users/me                   | Any      | My profile          |
+| POST   | /api/ai/doubt                   | Any      | AI Doubt Solver     |
+| POST   | /api/ai/quiz                    | Any      | AI Quiz Generator   |
 
 ## How to Run
 
