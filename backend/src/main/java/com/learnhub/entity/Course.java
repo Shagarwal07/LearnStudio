@@ -30,7 +30,7 @@ public class Course {
     private Level level;
 
     @JsonIgnore
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "instructor_id")
     private User instructor;
 
