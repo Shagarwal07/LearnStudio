@@ -1,14 +1,26 @@
-# Stage 1: Build
-FROM maven:3.9-eclipse-temurin-17 AS build
+# Stage 1: Build the application
+FROM maven:3.8.5-openjdk-17-slim AS build
 WORKDIR /app
-COPY backend/pom.xml .
-RUN mvn dependency:go-offline -q
-COPY backend/src ./src
-RUN mvn package -DskipTests -q && mv target/lms-backend-1.0.0.jar target/app.jar
 
-# Stage 2: Run
-FROM eclipse-temurin:17-jre-jammy
+# Copy the backend source and configuration
+COPY backend/pom.xml ./backend/
+COPY backend/src ./backend/src/
+
+# Copy frontend files into the Spring Boot static resources directory
+# This allows Spring Boot to serve the UI at the root context (/)
+COPY css/ ./backend/src/main/resources/static/css/
+COPY js/ ./backend/src/main/resources/static/js/
+COPY *.html ./backend/src/main/resources/static/
+
+# Build the JAR file
+RUN mvn -f backend/pom.xml clean package -DskipTests
+
+# Stage 2: Create the final production image
+FROM openjdk:17-jdk-slim
 WORKDIR /app
-COPY --from=build /app/target/app.jar app.jar
+
+# Copy only the built JAR from the previous stage
+COPY --from=build /app/backend/target/*.jar app.jar
+
 EXPOSE 8080
 ENTRYPOINT ["java", "-jar", "app.jar"]

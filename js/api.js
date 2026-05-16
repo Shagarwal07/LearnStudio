@@ -1,6 +1,4 @@
-const API = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-  ? 'http://localhost:8080/api'
-  : 'https://learnstudio-1.onrender.com/api';
+const API = '/api';
 
 // Wake up Render backend on page load (free tier cold start)
 if (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
