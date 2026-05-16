@@ -18,7 +18,6 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import java.util.List;
-import org.springframework.beans.factory.annotation.Value;
 
 @Configuration
 @EnableWebSecurity
@@ -28,9 +27,6 @@ public class SecurityConfig {
 
     private final JwtFilter jwtFilter;
 
-    @Value("${frontend.url:http://127.0.0.1:5500}")
-    private String frontendUrl;
-
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
@@ -38,13 +34,10 @@ public class SecurityConfig {
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
             .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
-                // Allow ALL preflight OPTIONS requests
                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                // Public endpoints
                 .requestMatchers("/api/auth/**").permitAll()
                 .requestMatchers("/api/health").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/courses/**").permitAll()
-                // Everything else needs JWT
                 .anyRequest().authenticated()
             )
             .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
@@ -67,12 +60,8 @@ public class SecurityConfig {
         config.setAllowedOrigins(List.of(
             "http://localhost:5500",
             "http://127.0.0.1:5500",
-            "http://localhost:3000",
-            "http://127.0.0.1:3000",
             "https://learnstudio.netlify.app",
-            "https://learnhub-frontend.netlify.app",
-            "https://learnstudio-1.onrender.com",
-            frontendUrl
+            "https://learnstudio-1.onrender.com"
         ));
         config.setAllowedMethods(List.of("GET","POST","PUT","DELETE","OPTIONS","PATCH"));
         config.setAllowedHeaders(List.of("*"));
