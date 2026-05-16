@@ -1,5 +1,4 @@
 # Stage 1: Build
-# cache-bust: 2026-05-16
 FROM maven:3.9-eclipse-temurin-17 AS build
 WORKDIR /app
 COPY backend/pom.xml .
