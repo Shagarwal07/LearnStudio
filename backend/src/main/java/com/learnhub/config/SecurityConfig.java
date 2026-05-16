@@ -40,7 +40,11 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.GET, "/api/courses/**").permitAll()
                 .anyRequest().authenticated()
             )
-            .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+            .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
+            .exceptionHandling(ex -> ex
+                .authenticationEntryPoint((req, res, e) -> res.sendError(401, "Unauthorized"))
+                .accessDeniedHandler((req, res, e) -> res.sendError(403, "Forbidden"))
+            );
         return http.build();
     }
 
