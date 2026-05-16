@@ -5,10 +5,13 @@ import jakarta.persistence.*;
 import lombok.*;
 import java.math.BigDecimal;
 import java.util.List;
+import lombok.Getter;
+import lombok.Setter;
 
 @Entity
 @Table(name = "courses")
-@Data @NoArgsConstructor @AllArgsConstructor @Builder
+@Getter
+@Setter @NoArgsConstructor @AllArgsConstructor @Builder
 public class Course {
 
     @Id
