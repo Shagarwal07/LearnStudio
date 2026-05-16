@@ -39,7 +39,7 @@ public class SecurityConfig {
 
                         // Permit root, all HTML files, and static resource folders
                         .requestMatchers("/", "/index.html", "/*.html").permitAll()
-                        .requestMatchers("/css/**", "/js/**", "/assests/**", "/favicon.ico").permitAll()
+                        .requestMatchers("/css/**", "/js/**", "/assets/**", "/favicon.ico").permitAll()
                         
                         .requestMatchers("/api/test").permitAll()
 
