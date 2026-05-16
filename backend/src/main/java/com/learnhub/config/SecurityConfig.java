@@ -27,34 +27,45 @@ public class SecurityConfig {
 
     private final JwtFilter jwtFilter;
 
+    // @Bean
+    // public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+    //     http
+    //             .csrf(csrf -> csrf.disable())
+    //             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+    //             .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+
+    //             .authorizeHttpRequests(auth -> auth
+    //                     .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+
+    //                     // Permit root, all HTML files, and static resource folders
+    //                     .requestMatchers("/", "/index.html", "/*.html").permitAll()
+    //                     .requestMatchers("/css/**", "/js/**", "/assets/**", "/favicon.ico").permitAll()
+                        
+    //                     .requestMatchers("/api/test").permitAll()
+
+    //                     .requestMatchers("/api/auth/**").permitAll()
+    //                     .requestMatchers("/api/health").permitAll()
+
+    //                     .requestMatchers("/api/courses").permitAll()
+    //                     .requestMatchers("/api/courses/**").permitAll()
+
+    //                     .requestMatchers(HttpMethod.GET, "/api/**").permitAll()
+
+    //                     .anyRequest().authenticated())
+    //             .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+    //     return http.build();
+    // }
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http
-                .csrf(csrf -> csrf.disable())
-                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-                .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+    http
+        .csrf(csrf -> csrf.disable())
+        .cors(cors -> cors.disable())
+        .authorizeHttpRequests(auth -> auth
+            .anyRequest().permitAll()
+        );
 
-                .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-
-                        // Permit root, all HTML files, and static resource folders
-                        .requestMatchers("/", "/index.html", "/*.html").permitAll()
-                        .requestMatchers("/css/**", "/js/**", "/assets/**", "/favicon.ico").permitAll()
-                        
-                        .requestMatchers("/api/test").permitAll()
-
-                        .requestMatchers("/api/auth/**").permitAll()
-                        .requestMatchers("/api/health").permitAll()
-
-                        .requestMatchers("/api/courses").permitAll()
-                        .requestMatchers("/api/courses/**").permitAll()
-
-                        .requestMatchers(HttpMethod.GET, "/api/**").permitAll()
-                        
-                        .anyRequest().authenticated())
-                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
-        return http.build();
-    }
+    return http.build();
+}
 
     @Bean
     public PasswordEncoder passwordEncoder() {
