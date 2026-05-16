@@ -81,6 +81,7 @@ public class CourseService {
         dto.setThumbnail(c.getThumbnail());
         dto.setLevel(c.getLevel());
         dto.setInstructorName(c.getInstructor() != null ? c.getInstructor().getName() : "");
+        // lessons and totalLessons are handled in getCourseById or via separate query to avoid LazyInitializationException
         dto.setTotalLessons(0);
         return dto;
     }

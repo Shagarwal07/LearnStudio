@@ -127,12 +127,12 @@ async function apiGetCourses(search = '') {
 }
 
 async function apiGetCourseDetails(id) {
-  const res = await fetch(`${API}/courses/${id}`);
+  const res = await fetch(`${API}/courses/${id}/details`);
   return res.json();
 }
 
 async function apiGetCourse(id) {
-  const res = await fetch(`${API}/courses/${id}`);
+  const res = await fetch(`${API}/courses/${id}/details`);
   return res.json();
 }
 

@@ -61,11 +61,13 @@ public class EnrollmentService {
                     Map<String, Object> map = new HashMap<>();
                     map.put("enrollmentId", e.getId());
                     map.put("courseId", e.getCourse().getId());
-                    map.put("courseTitle", e.getCourse().getTitle());
+                    // Avoid lazy loading course title if possible, or ensure it's fetched
+                    Course c = e.getCourse();
+                    map.put("courseTitle", c.getTitle());
                     map.put("enrolledAt", e.getEnrolledAt());
 
                     // Calculate progress dynamically
-                    List<Lesson> lessons = lessonRepository.findByCourseIdOrderByPosition(e.getCourse().getId());
+                    List<Lesson> lessons = lessonRepository.findByCourseIdOrderByPosition(c.getId());
                     long totalLessons = lessons.size();
                     long completedLessons = lessonProgressRepository.countByEnrollmentIdAndCompletedTrue(e.getId());
 

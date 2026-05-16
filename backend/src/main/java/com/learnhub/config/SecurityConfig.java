@@ -40,16 +40,17 @@ public class SecurityConfig {
 
                         // Permit root, all HTML files, and static resource folders
                         .requestMatchers("/", "/index.html", "/*.html").permitAll()
-                        .requestMatchers("/css/**", "/js/**", "/favicon.ico").permitAll()
+                        .requestMatchers("/css/**", "/js/**", "/images/**", "/videos/**", "/favicon.ico").permitAll()
                         
                         .requestMatchers("/api/test").permitAll()
 
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/api/health").permitAll()
 
-                        .requestMatchers(HttpMethod.GET, "/api/courses/**").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/enrollments/progress/**").authenticated()
+                        .requestMatchers(HttpMethod.GET, "/api/courses", "/api/courses/**").permitAll()
                         
+                        .requestMatchers("/api/enrollments/progress/**").authenticated()
+                        .requestMatchers("/api/progress/**").authenticated()
                         .requestMatchers("/api/enrollments/**").authenticated()
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
 
