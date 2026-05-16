@@ -9,19 +9,19 @@ import java.util.Map;
 @Service
 public class GeminiService {
 
-    @Value("${gemini.api.key}")
+    @Value("${gemini.api.key:}")
     private String geminiKey;
 
-    @Value("${gemini.api.url}")
+    @Value("${gemini.api.url:}")
     private String geminiUrl;
 
-    @Value("${grok.api.key}")
+    @Value("${grok.api.key:}")
     private String grokKey;
 
-    @Value("${grok.api.url}")
+    @Value("${grok.api.url:https://api.x.ai/v1/chat/completions}")
     private String grokUrl;
 
-    @Value("${grok.model}")
+    @Value("${grok.model:grok-3-mini}")
     private String grokModel;
 
     private final WebClient webClient = WebClient.builder().build();
