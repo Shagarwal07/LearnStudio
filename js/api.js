@@ -1,4 +1,6 @@
-const API = 'http://localhost:8080/api';
+const API = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+  ? 'http://localhost:8080/api'
+  : 'https://learnstudio-1.onrender.com/api';
 
 // ── Token helpers ─────────────────────────────────────────
 const getToken = () => localStorage.getItem('lms_token');

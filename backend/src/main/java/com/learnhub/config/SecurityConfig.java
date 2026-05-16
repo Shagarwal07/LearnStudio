@@ -64,8 +64,9 @@ public class SecurityConfig {
             "http://127.0.0.1:5500",
             "http://localhost:3000",
             "http://127.0.0.1:3000",
-            "https://learnstudio.netlify.app",  // production frontend
-            "https://learnhub-frontend.netlify.app"
+            "https://learnstudio.netlify.app",
+            "https://learnhub-frontend.netlify.app",
+            "https://learnstudio-1.onrender.com"
         ));
         config.setAllowedMethods(List.of("GET","POST","PUT","DELETE","OPTIONS","PATCH"));
         config.setAllowedHeaders(List.of("*"));
