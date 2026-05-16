@@ -50,7 +50,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/courses/**").permitAll()
 
                         // .anyRequest().authenticated())
-                        .anyRequest().permitAll()
+                        .anyRequest().permitAll() )
                 .headers(headers -> headers
                         .addHeaderWriter(new StaticHeadersWriter("Cross-Origin-Opener-Policy", "same-origin-allow-popups"))
                 )
