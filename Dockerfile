@@ -16,7 +16,7 @@ COPY *.html ./backend/src/main/resources/static/
 RUN mvn -f backend/pom.xml clean package -DskipTests
 
 # Stage 2: Create the final production image
-FROM openjdk:17-jdk-slim
+FROM eclipse-temurin:17-jre-jammy
 WORKDIR /app
 
 # Copy only the built JAR from the previous stage
