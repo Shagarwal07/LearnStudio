@@ -174,6 +174,15 @@ async function apiEnroll(courseId) {
   return text ? JSON.parse(text) : {};
 }
 
+async function apiMyEnrollments() {
+  const res = await fetch(`${API}/enrollments/my`, {
+    method: 'GET',
+    headers: authHeaders()
+  });
+  if (!res.ok) throw new Error('Failed to load enrollments: ' + res.status);
+  return res.json();
+}
+
 // ── AI ───────────────────────────────────────────────────
 async function apiAiSolveDoubt(question, courseName, model = 'gemini') {
   const res = await fetch(`${API}/ai/doubt`, {
