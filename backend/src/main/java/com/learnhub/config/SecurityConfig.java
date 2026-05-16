@@ -37,7 +37,11 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 
-                        .requestMatchers("/", "/api/test").permitAll()
+                        // Permit root, all HTML files, and static resource folders
+                        .requestMatchers("/", "/index.html", "/*.html").permitAll()
+                        .requestMatchers("/css/**", "/js/**", "/assests/**", "/favicon.ico").permitAll()
+                        
+                        .requestMatchers("/api/test").permitAll()
 
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/api/health").permitAll()
