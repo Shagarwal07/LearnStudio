@@ -13,7 +13,6 @@ COPY backend/src ./backend/src/
 # This allows Spring Boot to serve the UI at the root context (/)
 COPY css/ ./backend/src/main/resources/static/css/
 COPY js/ ./backend/src/main/resources/static/js/
-COPY assets/ ./backend/src/main/resources/static/assets/
 COPY *.html ./backend/src/main/resources/static/
 
 # Build the JAR file
