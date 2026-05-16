@@ -66,14 +66,7 @@ public class CourseService {
         dto.setThumbnail(c.getThumbnail());
         dto.setLevel(c.getLevel());
         dto.setInstructorName(c.getInstructor() != null ? c.getInstructor().getName() : "");
-        dto.setTotalLessons(c.getLessons() != null ? c.getLessons().size() : 0);
-        // First lesson's videoUrl as course preview
-        if (c.getLessons() != null && !c.getLessons().isEmpty()) {
-            c.getLessons().stream()
-                .filter(l -> l.getVideoUrl() != null && !l.getVideoUrl().isBlank())
-                .findFirst()
-                .ifPresent(l -> dto.setPreviewVideoUrl(l.getVideoUrl()));
-        }
+        dto.setTotalLessons(0);
         return dto;
     }
 }
