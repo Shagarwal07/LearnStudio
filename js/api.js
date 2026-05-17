@@ -189,7 +189,9 @@ async function apiMyEnrollments() {
 }
 
 async function apiCourseProgress(courseId) {
-    const token = getToken(); 
+    const token = getToken();
+    console.log("Progress token exists (lms_token):", !!token);
+    if (!token) console.error("No token found in localStorage for progress request.");
 
     const response = await fetch(`${API}/enrollments/progress/${encodeURIComponent(courseId)}`, {
         method: "GET",

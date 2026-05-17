@@ -56,7 +56,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/api/enrollments/progress/**").authenticated()
                         .requestMatchers("/api/enrollments/**").authenticated()
                         .requestMatchers("/api/progress/**").authenticated()
-                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/api/admin/**").hasAuthority("ADMIN")
 
                         .anyRequest().authenticated()
                 )
