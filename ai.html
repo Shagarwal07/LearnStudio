@@ -303,6 +303,31 @@
     btn.classList.add('btn-primary');
   }
 
+  // ── Helper: Robust AI JSON Parser ───────────────────────
+  function parseAiJson(text) {
+    try {
+      let cleaned = text.trim();
+
+      cleaned = cleaned
+        .replace(/^```json/i, "")
+        .replace(/^```/i, "")
+        .replace(/```$/i, "")
+        .trim();
+
+      const start = cleaned.indexOf("[");
+      const end = cleaned.lastIndexOf("]");
+
+      if (start !== -1 && end !== -1) {
+        cleaned = cleaned.substring(start, end + 1);
+      }
+
+      return JSON.parse(cleaned);
+    } catch (e) {
+      console.error("AI raw response:", text);
+      throw e;
+    }
+  }
+
   // ── Loading spinner helper ─────────────────────────────
   function showLoading(elId) {
     const el = document.getElementById(elId);
@@ -398,15 +423,16 @@
     document.getElementById('quizError').classList.add('d-none');
 
     try {
-      const raw = await aiGenerateQuiz(topic);
-      if (raw.startsWith('ERROR:')) {
+      const raw = await apiAiQuiz(topic);
+
+      if (typeof raw === 'string' && raw.startsWith('ERROR:')) {
         document.getElementById('quizError').classList.remove('d-none');
         document.getElementById('quizError').innerHTML = `<div class="alert alert-warning small">${formatAiError(raw)}</div>`;
         return;
       }
-      // Strip possible markdown code fences
-      const json = raw.replace(/```json|```/g, '').trim();
-      quizQuestions = JSON.parse(json);
+
+      quizQuestions = typeof raw === 'string' ? parseAiJson(raw) : raw;
+
       quizIndex = 0; quizScore = 0;
       showQuestion();
     } catch (e) {
