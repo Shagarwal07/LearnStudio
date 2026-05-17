@@ -12,7 +12,7 @@ import java.util.*;
 @RestController
 @RequestMapping("/api/admin")
 @RequiredArgsConstructor
-@PreAuthorize("hasRole('ADMIN')")
+@PreAuthorize("hasAuthority('ADMIN')")
 public class AdminController {
 
     private final DataSource dataSource;

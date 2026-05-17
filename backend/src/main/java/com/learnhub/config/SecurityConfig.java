@@ -52,7 +52,7 @@ public class SecurityConfig {
                                 "/api/courses/**"
                         ).permitAll()
                         
-                        .requestMatchers(HttpMethod.GET, "/api/enrollments/progress/**").authenticated()
+                        .requestMatchers(HttpMethod.GET,  "/api/enrollments/progress/**").authenticated()
                         .requestMatchers(HttpMethod.POST, "/api/enrollments/progress/**").authenticated()
                         .requestMatchers("/api/enrollments/**").authenticated()
                         .requestMatchers("/api/progress/**").authenticated()

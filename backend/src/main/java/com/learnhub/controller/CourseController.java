@@ -35,21 +35,21 @@ public class CourseController {
 
     // Protected - only INSTRUCTOR or ADMIN
     @PostMapping
-    @PreAuthorize("hasAnyRole('INSTRUCTOR','ADMIN')")
+    @PreAuthorize("hasAnyAuthority('INSTRUCTOR','ADMIN')")
     public ResponseEntity<CourseDTO> createCourse(@Valid @RequestBody CourseDTO dto,
                                                    Principal principal) {
         return ResponseEntity.ok(courseService.createCourse(dto, principal.getName()));
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasAnyRole('INSTRUCTOR','ADMIN')")
+    @PreAuthorize("hasAnyAuthority('INSTRUCTOR','ADMIN')")
     public ResponseEntity<CourseDTO> updateCourse(@PathVariable Long id,
                                                    @Valid @RequestBody CourseDTO dto) {
         return ResponseEntity.ok(courseService.updateCourse(id, dto));
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<Void> deleteCourse(@PathVariable Long id) {
         courseService.deleteCourse(id);
         return ResponseEntity.noContent().build();
