@@ -502,6 +502,21 @@ async function loadCourseAndProgress() {
     } else {
         lessonList.innerHTML = `<div class="alert alert-info border-0 small">Curriculum is being updated.</div>`;
     }
+
+    // 3. Check enrollment status (requires authentication)
+    let enrollment = null;
+    let isEnrolled = false;
+    if (getToken()) {
+        try {
+            const enrollments = await apiMyEnrollments();
+            enrollment = enrollments.find(e => {
+                const enrolledCid = e.course?.id || e.courseId || e.id;
+                return Number(enrolledCid) === cid;
+            });
+            isEnrolled = !!enrollment;
+        } catch (e) { console.warn("Enrollment check skipped (user likely not logged in)"); }
+    }
+
     if (isEnrolled) {
       console.log("User enrolled");
       setupEnrollButtons(course.id, price, true);
