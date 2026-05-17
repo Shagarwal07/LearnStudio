@@ -228,26 +228,47 @@ async function apiCompleteLesson(courseId, lessonId) {
 
 // ── AI ───────────────────────────────────────────────────
 async function apiAiSolveDoubt(question, courseName, model = 'gemini') {
-  const res = await fetch(`${API}/ai/doubt`, {
+  const url = `${API}/ai/doubt`;
+  const response = await fetch(url, {
     method: 'POST', headers: authHeaders(),
     body: JSON.stringify({ question, courseName, model })
   });
-  return res.json();
+  
+  console.log("AI request URL:", url);
+  console.log("AI token exists:", !!localStorage.getItem("lms_token"));
+  console.log("AI response status:", response.status);
+  console.log("AI response body:", await response.clone().text());
+
+  return response.json();
 }
 
 async function apiAiRecommend(enrolledCourses, model = 'gemini') {
-  const res = await fetch(`${API}/ai/recommend`, {
+  const url = `${API}/ai/recommend`;
+  const response = await fetch(url, {
     method: 'POST', headers: authHeaders(),
     body: JSON.stringify({ enrolledCourses, model })
   });
-  return res.json();
+
+  console.log("AI request URL:", url);
+  console.log("AI token exists:", !!localStorage.getItem("lms_token"));
+  console.log("AI response status:", response.status);
+  console.log("AI response body:", await response.clone().text());
+
+  return response.json();
 }
 
 async function apiAiQuiz(topic, model = 'gemini') {
-  const res = await fetch(`${API}/ai/quiz`, {
+  const url = `${API}/ai/quiz`;
+  const response = await fetch(url, {
     method: 'POST', headers: authHeaders(),
     body: JSON.stringify({ topic, model })
   });
-  if (!res.ok) return "ERROR: " + res.status;
-  return res.text();
+
+  console.log("AI request URL:", url);
+  console.log("AI token exists:", !!localStorage.getItem("lms_token"));
+  console.log("AI response status:", response.status);
+  console.log("AI response body:", await response.clone().text());
+
+  if (!response.ok) return "ERROR: " + response.status;
+  return response.text();
 }

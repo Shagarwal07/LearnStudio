@@ -434,7 +434,10 @@
       }
 
       const data = typeof raw === 'string' ? parseAiJson(raw) : raw;
-      quizQuestions = data.questions || data;
+      const questions = data.questions || data.quiz || data;
+      quizQuestions = Array.isArray(questions) ? questions : [];
+
+      if (quizQuestions.length === 0) throw new Error("No questions found");
 
       quizIndex = 0; quizScore = 0;
       showQuestion();
