@@ -71,10 +71,10 @@
       <div>
         <p class="text-white opacity-75 small mb-1">AI Model</p>
         <div class="model-pill">
-          <button id="btnGemini" onclick="switchModel('gemini')" class="active">
+          <button class="model-btn active" data-model="gemini" onclick="switchModel('gemini')">
             ✦ Gemini
           </button>
-          <button id="btnGrok" onclick="switchModel('grok')">
+          <button class="model-btn" data-model="grok" onclick="switchModel('grok')">
             ⚡ Grok
           </button>
         </div>
@@ -261,6 +261,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="js/auth.js"></script>
+<script src="js/ai.js"></script>
 <script src="js/api.js"></script>
 <script>
   requireAuth();
@@ -273,9 +274,16 @@
 
   function switchModel(m) {
     setAiModel(m);
-    document.getElementById('btnGemini').classList.toggle('active', m === 'gemini');
-    document.getElementById('btnGrok').classList.toggle('active', m === 'grok');
-    document.getElementById('aiProviderLabel').textContent = MODELS[m].label;
+
+    document.querySelectorAll(".model-btn").forEach(btn => {
+        btn.classList.remove("active");
+    });
+
+    const activeBtn = document.querySelector(`[data-model="${m}"]`);
+    if (activeBtn) {
+        activeBtn.classList.add("active");
+    }
+    if (MODELS[m]) document.getElementById('aiProviderLabel').textContent = MODELS[m].label;
   }
 
   // Init from localStorage
