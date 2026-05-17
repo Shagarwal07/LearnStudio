@@ -57,7 +57,8 @@ public class GeminiService {
 
         } catch (RuntimeException e) {
             return e.getMessage() != null && e.getMessage().contains("QUOTA_EXCEEDED")
-                ? "{\"error\": \"QUOTA_EXCEEDED\", \"message\": \"AI quota reached. Please try later.\"}" : "ERROR:" + e.getMessage();
+                ? "ERROR:QUOTA_EXCEEDED"
+                : "ERROR:" + e.getMessage();
         } catch (Exception e) {
             return "ERROR:Gemini unavailable.";
         }
@@ -89,7 +90,8 @@ public class GeminiService {
 
         } catch (RuntimeException e) {
             return e.getMessage() != null && e.getMessage().contains("QUOTA_EXCEEDED")
-                ? "{\"error\": \"QUOTA_EXCEEDED\", \"message\": \"AI quota reached. Please try later.\"}" : "ERROR:" + e.getMessage();
+                ? "ERROR:QUOTA_EXCEEDED"
+                : "ERROR:" + e.getMessage();
         } catch (Exception e) {
             return "ERROR:Grok unavailable.";
         }
@@ -111,12 +113,15 @@ public class GeminiService {
 
     public String generateQuiz(String topic, String model) {
         logRequest("Quiz Generator");
-        String prompt = "Generate a 3-question multiple choice quiz about " + topic + " with answers at the end.";
+        String prompt = "Generate a 3-question multiple choice quiz about " + topic +
+                ". Return ONLY valid JSON array. No markdown. Format: " +
+                "[{\"question\":\"...\",\"options\":[\"A\",\"B\",\"C\",\"D\"],\"answer\":\"A\"}]";
         return ask(prompt, model);
     }
 
     private void logRequest(String endpoint) {
-        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        var auth = SecurityContextHolder.getContext().getAuthentication();
+        String email = auth != null ? auth.getName() : "anonymous";
         System.out.println("AI endpoint hit [" + endpoint + "] - User: " + email + " - Time: " + System.currentTimeMillis());
     }
 }

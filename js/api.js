@@ -237,9 +237,14 @@ async function apiAiSolveDoubt(question, courseName, model = 'gemini') {
   console.log("AI request URL:", url);
   console.log("AI token exists:", !!localStorage.getItem("lms_token"));
   console.log("AI response status:", response.status);
-  console.log("AI response body:", await response.clone().text());
 
-  return response.json();
+  const text = await response.text();
+  console.log("AI response body:", text);
+
+  if (text === "ERROR:QUOTA_EXCEEDED") {
+    return { error: "QUOTA_EXCEEDED", message: "AI quota reached. Please try later." };
+  }
+  try { return JSON.parse(text); } catch(e) { return text; }
 }
 
 async function apiAiRecommend(enrolledCourses, model = 'gemini') {
@@ -252,9 +257,14 @@ async function apiAiRecommend(enrolledCourses, model = 'gemini') {
   console.log("AI request URL:", url);
   console.log("AI token exists:", !!localStorage.getItem("lms_token"));
   console.log("AI response status:", response.status);
-  console.log("AI response body:", await response.clone().text());
 
-  return response.json();
+  const text = await response.text();
+  console.log("AI response body:", text);
+
+  if (text === "ERROR:QUOTA_EXCEEDED") {
+    return { error: "QUOTA_EXCEEDED", message: "AI quota reached. Please try later." };
+  }
+  try { return JSON.parse(text); } catch(e) { return text; }
 }
 
 async function apiAiQuiz(topic, model = 'gemini') {
@@ -267,8 +277,14 @@ async function apiAiQuiz(topic, model = 'gemini') {
   console.log("AI request URL:", url);
   console.log("AI token exists:", !!localStorage.getItem("lms_token"));
   console.log("AI response status:", response.status);
-  console.log("AI response body:", await response.clone().text());
 
   if (!response.ok) return "ERROR: " + response.status;
-  return response.text();
+
+  const text = await response.text();
+  console.log("AI response body:", text);
+
+  if (text === "ERROR:QUOTA_EXCEEDED") {
+    return { error: "QUOTA_EXCEEDED", message: "AI quota reached. Please try later." };
+  }
+  return text;
 }

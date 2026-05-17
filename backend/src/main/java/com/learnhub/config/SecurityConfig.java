@@ -45,6 +45,8 @@ public class SecurityConfig {
                         .requestMatchers("/api/test").permitAll()
 
                         .requestMatchers("/api/auth/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/auth/google").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/auth/google/register").permitAll()
                         .requestMatchers("/api/health").permitAll()
 
                         .requestMatchers(HttpMethod.GET,
