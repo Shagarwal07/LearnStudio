@@ -27,7 +27,7 @@ public class CourseController {
         return ResponseEntity.ok(courseService.getAllCourses());
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/{id}/details")
     public ResponseEntity<CourseDTO> getCourse(@PathVariable Long id) {
         return ResponseEntity.ok(courseService.getCourseById(id));
     }
