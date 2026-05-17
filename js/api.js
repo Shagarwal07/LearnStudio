@@ -39,7 +39,7 @@ async function apiLogin(email, password) {
   if (!res.ok) {
     // ── Developer Bypass ──
     // Allows immediate access to admin tools if the backend/DB fails during development
-    if (email === 'admin@learnhub.com' && password === 'admin123') {
+    if (email === 'admin@learnstudio.com' && password === 'admin123') {
       const devUser = { token: 'dev-debug-token', name: 'System Admin', email, role: 'ADMIN' };
       setToken(devUser.token);
       setUser({ name: devUser.name, email: devUser.email, role: devUser.role });
