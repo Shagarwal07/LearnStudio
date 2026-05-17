@@ -48,8 +48,9 @@ public class SecurityConfig {
                         .requestMatchers("/", "/index.html", "/*.html").permitAll()
                         .requestMatchers("/css/**", "/js/**", "/images/**", "/videos/**", "/favicon.ico").permitAll()
                         
-                        .requestMatchers(HttpMethod.POST, "/api/auth/google/**").permitAll()
                         .requestMatchers("/api/auth/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/auth/google").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/auth/google/register").permitAll()
                         .requestMatchers("/api/health").permitAll()
 
                         .requestMatchers(HttpMethod.GET, "/api/courses",
@@ -86,15 +87,14 @@ public class SecurityConfig {
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
-        List<String> origins = Arrays.stream(allowedOrigins.split(","))
-                .map(String::trim)
-                .filter(s -> !s.isEmpty())
-                .toList();
-
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(origins);
-        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
-        config.setAllowedHeaders(List.of("Authorization", "Content-Type", "Cache-Control", "X-Requested-With"));
+        config.setAllowedOrigins(List.of(
+            "https://learnstudio-1.onrender.com",
+            "http://localhost:5500",
+            "http://127.0.0.1:5500"
+        ));
+        config.setAllowedMethods(List.of("*"));
+        config.setAllowedHeaders(List.of("*"));
         config.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
