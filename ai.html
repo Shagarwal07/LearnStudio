@@ -347,17 +347,18 @@
     showLoading('doubtAnswer');
 
     try {
-      const answer = await aiSolveDoubt(question, course);
+      const data = await apiAiSolveDoubt(question, course);
+      const answerText = data.answer || data;
       document.getElementById('doubtAnswer').classList.remove('d-none');
-      document.getElementById('doubtAnswer').innerHTML = answer.startsWith('ERROR:')
-        ? `<div class="alert alert-warning small">${formatAiError(answer)}</div>`
+      document.getElementById('doubtAnswer').innerHTML = (typeof answerText === 'string' && answerText.startsWith('ERROR:'))
+        ? `<div class="alert alert-warning small">${formatAiError(answerText)}</div>`
         : `<div class="d-flex align-items-start gap-3">
             <div style="width:36px;height:36px;background:#4f46e5;border-radius:50%;
                         display:flex;align-items:center;justify-content:center;
                         color:#fff;font-size:1rem;flex-shrink:0">🤖</div>
             <div class="flex-grow-1">
               <div class="fw-semibold small text-primary mb-1">${ getAiModel() === 'grok' ? '⚡ Grok' : '🤖 Gemini'} · ${course}</div>
-              <div class="chat-bubble">${answer}</div>
+              <div class="chat-bubble">${answerText}</div>
             </div>
           </div>`;
     } catch (e) {
@@ -385,11 +386,12 @@
       // Get real enrolled course names from API
       const enrollments = await apiMyEnrollments();
       const courseNames = enrollments.map(e => e.courseTitle);
-      const recs = await aiRecommend(courseNames);
+      const data = await apiAiRecommend(courseNames);
+      const recsText = data.recommendations ? data.recommendations.join('\n') : (data.answer || data);
 
       document.getElementById('recAnswer').classList.remove('d-none');
-      document.getElementById('recAnswer').innerHTML = recs.startsWith('ERROR:')
-        ? `<div class="alert alert-warning small">${formatAiError(recs)}</div>`
+      document.getElementById('recAnswer').innerHTML = (typeof recsText === 'string' && recsText.startsWith('ERROR:'))
+        ? `<div class="alert alert-warning small">${formatAiError(recsText)}</div>`
         : `<div class="d-flex align-items-start gap-3">
             <div style="width:36px;height:36px;background:#0e7490;border-radius:50%;
                         display:flex;align-items:center;justify-content:center;
@@ -398,7 +400,7 @@
               <div class="fw-semibold small text-primary mb-1">
                 ${ getAiModel() === 'grok' ? '⚡ Grok' : '🌟 Gemini'} · Based on ${courseNames.length} enrolled course(s)
               </div>
-              <div class="chat-bubble">${recs}</div>
+              <div class="chat-bubble">${recsText}</div>
             </div>
           </div>`;
     } catch (e) {
@@ -431,7 +433,8 @@
         return;
       }
 
-      quizQuestions = typeof raw === 'string' ? parseAiJson(raw) : raw;
+      const data = typeof raw === 'string' ? parseAiJson(raw) : raw;
+      quizQuestions = data.questions || data;
 
       quizIndex = 0; quizScore = 0;
       showQuestion();

@@ -248,5 +248,6 @@ async function apiAiQuiz(topic, model = 'gemini') {
     method: 'POST', headers: authHeaders(),
     body: JSON.stringify({ topic, model })
   });
-  return res.json();
+  if (!res.ok) return "ERROR: " + res.status;
+  return res.text();
 }
