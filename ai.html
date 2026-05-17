@@ -106,7 +106,7 @@
                  placeholder="Course name (e.g. React.js)"/>
         </div>
         <div class="col-md-8">
-          <div class="input-group">
+          <div class="input-group input-group-responsive">
             <input type="text" class="form-control" id="doubtQuestion"
                    placeholder="e.g. What is useEffect hook in React?"
                    onkeydown="if(event.key==='Enter') askDoubt()"/>
@@ -188,7 +188,7 @@
     <div class="ai-card" id="quizSetup">
       <h6 class="fw-bold mb-1">📝 AI Live Quiz</h6>
       <p class="text-muted small mb-3">Enter a topic — Gemini generates 5 questions. Answer them live and get your score!</p>
-      <div class="input-group mb-3" style="max-width:500px">
+      <div class="input-group input-group-responsive mb-3" style="max-width:500px">
         <input type="text" class="form-control" id="quizTopic"
                placeholder="e.g. React Hooks, SQL Joins, Docker..."
                onkeydown="if(event.key==='Enter') generateQuiz()"/>
