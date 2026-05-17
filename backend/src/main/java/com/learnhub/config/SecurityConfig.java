@@ -48,8 +48,9 @@ public class SecurityConfig {
                         .requestMatchers("/", "/index.html", "/*.html").permitAll()
                         .requestMatchers("/css/**", "/js/**", "/images/**", "/videos/**", "/favicon.ico").permitAll()
                         
-                        .requestMatchers("/api/auth/**", "/auth/**").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/auth/google/**", "/auth/google/**").permitAll()
+                        .requestMatchers("/api/auth/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/auth/google").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/auth/google/register").permitAll()
                         .requestMatchers("/api/health").permitAll()
 
                         .requestMatchers(HttpMethod.GET, "/api/courses",
@@ -64,6 +65,13 @@ public class SecurityConfig {
                         .requestMatchers("/api/admin/**").hasAuthority("ADMIN")
 
                         .anyRequest().authenticated()
+                )
+                .exceptionHandling(ex -> ex
+                    .accessDeniedHandler((request, response, accessDeniedException) -> {
+                        System.out.println("ACCESS DENIED PATH = " + request.getServletPath());
+                        accessDeniedException.printStackTrace();
+                        response.sendError(403, "ACCESS_DENIED: " + request.getServletPath());
+                    })
                 )
                 .headers(headers -> headers
                         .addHeaderWriter(new StaticHeadersWriter("Cross-Origin-Opener-Policy", "same-origin-allow-popups"))
