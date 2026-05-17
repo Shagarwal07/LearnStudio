@@ -336,7 +336,7 @@
   }
 
   // ── Feature 1: Doubt Solver ───────────────────────────
-  let aiLoading = false;
+  let aiLoading = false; // Unified global guard
 
   async function askDoubt() {
     if (aiLoading) return;
@@ -510,7 +510,7 @@
     } finally {
       btn.disabled = false;
       btn.innerHTML = '<i class="bi bi-lightning-fill me-1"></i> Start Quiz';
-      setTimeout(() => aiLoadingQuiz = false, 3000);
+      setTimeout(() => { aiLoading = false; }, 3000);
     }
   }
 
