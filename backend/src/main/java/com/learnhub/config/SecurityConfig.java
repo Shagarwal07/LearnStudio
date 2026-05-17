@@ -70,6 +70,7 @@ public class SecurityConfig {
                         .addHeaderWriter(new StaticHeadersWriter("Referrer-Policy", "no-referrer-when-downgrade"))
                 )
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+        System.out.println("SECURITY CONFIG LOADED - /api/auth/** permitAll enabled");
         return http.build();
     }
 
