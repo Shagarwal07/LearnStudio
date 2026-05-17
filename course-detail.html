@@ -481,7 +481,7 @@ async function loadCourseAndProgress() {
     document.getElementById('instructor-name-card').textContent = instrName;
     document.getElementById('instructor-avatar').textContent    = instrName.charAt(0).toUpperCase();
 
-    const totalLessonsCount = course.totalLessons || 0;
+    let totalLessonsCount = course.totalLessons || 0;
     document.getElementById('total-lessons-hero').textContent = totalLessonsCount;
     document.getElementById('detail-level').textContent       = course.level || '—';
     document.getElementById('detail-lessons').textContent     = totalLessonsCount + ' lessons';
@@ -502,24 +502,6 @@ async function loadCourseAndProgress() {
     } else {
         lessonList.innerHTML = `<div class="alert alert-info border-0 small">Curriculum is being updated.</div>`;
     }
-
-    // 3. Check enrollment and progress (requires authentication/token)
-    let enrollment = null;
-    if (getToken()) {
-        try {
-            const enrollments = await apiMyEnrollments();
-            enrollment = enrollments.find(e => {
-                const enrolledCid = e.course?.id || e.courseId || e.id;
-                return Number(enrolledCid) === cid;
-            });
-        } catch (e) {
-            console.warn("Enrollment check skipped (user likely not logged in)");
-        }
-    }
-
-    const isEnrolled = !!enrollment;
-    totalLessonsCount = course.totalLessons || _lessons.length || totalLessonsCount;
-
     if (isEnrolled) {
       console.log("User enrolled");
       setupEnrollButtons(course.id, price, true);
