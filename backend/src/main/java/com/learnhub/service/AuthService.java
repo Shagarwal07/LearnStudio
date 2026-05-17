@@ -105,9 +105,12 @@ public class AuthService {
     }
 
     private GoogleIdToken.Payload verifyGoogleToken(String credential) throws Exception {
+        if (googleClientId == null || googleClientId.isBlank()) {
+            throw new RuntimeException("GOOGLE_CLIENT_ID is not configured.");
+        }
         GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(
                 new NetHttpTransport(), GsonFactory.getDefaultInstance())
-                .setAudience(Collections.singletonList(googleClientId))
+                .setAudience(Collections.singletonList(googleClientId.trim()))
                 .build();
         GoogleIdToken idToken = verifier.verify(credential);
         if (idToken == null) throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid Google token");
