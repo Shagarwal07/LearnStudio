@@ -1,8 +1,11 @@
 // If we are on port 5500 (Live Server), point to the local Spring Boot
 // Otherwise, use relative paths (unified Docker/Production)
-const API = window.location.port === '5500' 
-  ? 'http://localhost:8080/api' 
-  : '/api';
+const API = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+  ? 'http://localhost:8080/api'
+  : 'https://learnstudio-1.onrender.com/api';
+
+// Log API base for debugging
+console.log("API Base URL:", API);
 
 // Wake up Render backend on page load (free tier cold start)
 if (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
