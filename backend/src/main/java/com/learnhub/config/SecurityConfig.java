@@ -97,6 +97,7 @@ public class SecurityConfig {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowedOrigins(List.of(
             "https://learnstudio-1.onrender.com",
+            "https://learnstudio.netlify.app",
             "http://localhost:5500",
             "http://127.0.0.1:5500"
         ));
