@@ -189,9 +189,9 @@ async function apiMyEnrollments() {
 }
 
 async function apiCourseProgress(courseId) {
-    const token = getToken(); // Returns 'lms_token' from localStorage
+    const token = getToken(); 
 
-    const response = await fetch(`${API}/enrollments/progress/${courseId}`, {
+    const response = await fetch(`${API}/enrollments/progress/${encodeURIComponent(courseId)}`, {
         method: "GET",
         headers: {
             "Content-Type": "application/json",
@@ -207,12 +207,21 @@ async function apiCourseProgress(courseId) {
 }
 
 async function apiCompleteLesson(courseId, lessonId) {
-  const res = await fetch(`${API}/enrollments/${courseId}/lessons/${lessonId}/complete`, {
-    method: 'POST',
-    headers: authHeaders()
-  });
-  if (!res.ok) throw new Error('Failed to complete lesson: ' + res.status);
-  return res.json();
+    const token = getToken();
+
+    const response = await fetch(`${API}/enrollments/progress/${courseId}/lessons/${lessonId}/complete`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`
+        }
+    });
+
+    if (!response.ok) {
+        throw new Error(`Failed to complete lesson: ${response.status}`);
+    }
+
+    return await response.json();
 }
 
 // ── AI ───────────────────────────────────────────────────
