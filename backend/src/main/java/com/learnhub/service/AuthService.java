@@ -55,33 +55,39 @@ public class AuthService {
 
     public AuthResponse loginWithGoogle(String credential) {
         try {
-            System.out.println("GOOGLE LOGIN SERVICE HIT");
-            System.out.println("Google credential received: " + (credential != null));
-
             GoogleIdToken.Payload payload = verifyGoogleToken(credential);
             String email = payload.getEmail();
 
-            // LOGIN ONLY — user must already exist in DB
-            User user = userRepository.findByEmail(email)
-                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "NOT_REGISTERED"));
+            System.out.println("GOOGLE SERVICE HIT");
+            System.out.println("GOOGLE EMAIL = " + email);
+            boolean exists = userRepository.findByEmail(email).isPresent();
+            System.out.println("USER EXISTS = " + exists);
+
+            if (!exists) {
+                throw new ResponseStatusException(HttpStatus.NOT_FOUND, 
+                    "Google account not registered (NOT_REGISTERED). Please sign up first.");
+            }
+
+            User user = userRepository.findByEmail(email).get();
 
             String token = jwtUtil.generateToken(user.getEmail());
             return new AuthResponse(token, user.getName(), user.getEmail(), user.getRole().name());
-        } catch (RuntimeException e) {
+        } catch (ResponseStatusException e) {
             throw e;
         } catch (Exception e) {
-            throw new RuntimeException("Google login failed: " + e.getMessage());
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Google login failed: " + e.getMessage());
         }
     }
 
     public AuthResponse registerWithGoogle(String credential, String role) {
         try {
-            System.out.println("GOOGLE REGISTER SERVICE HIT");
-            System.out.println("Google credential received: " + (credential != null));
-
             GoogleIdToken.Payload payload = verifyGoogleToken(credential);
             String email = payload.getEmail();
             String name  = (String) payload.get("name");
+
+            System.out.println("GOOGLE SERVICE HIT");
+            System.out.println("GOOGLE EMAIL = " + email);
+            System.out.println("USER EXISTS = " + userRepository.existsByEmail(email));
 
             if (userRepository.existsByEmail(email)) {
                 // Fallback to login if user already exists
@@ -103,10 +109,10 @@ public class AuthService {
 
             String token = jwtUtil.generateToken(user.getEmail());
             return new AuthResponse(token, user.getName(), user.getEmail(), user.getRole().name());
-        } catch (RuntimeException e) {
+        } catch (ResponseStatusException e) {
             throw e;
         } catch (Exception e) {
-            throw new RuntimeException("Google registration failed: " + e.getMessage());
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Google registration failed: " + e.getMessage());
         }
     }
 
