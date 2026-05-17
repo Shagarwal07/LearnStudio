@@ -74,11 +74,21 @@ async function apiRegister(name, email, password, role) {
 }
 
 async function apiGoogleLogin(credential) {
-  const res = await fetch(`${API}/auth/google`, {
+  const url = `${API}/auth/google`;
+  const payload = { credential };
+  console.log("Google auth URL:", url);
+  console.log("Credential exists:", !!credential);
+
+  const res = await fetch(url, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ credential })
+    body: JSON.stringify(payload)
   });
+
+  const bodyText = await res.clone().text();
+  console.log("Google auth status:", res.status);
+  console.log("Google auth body:", bodyText);
+
   if (!res.ok) {
     const err = await res.json().catch(() => ({}));
     const msg = err.message || '';
@@ -93,11 +103,21 @@ async function apiGoogleLogin(credential) {
 }
 
 async function apiGoogleRegister(credential, role) {
-  const res = await fetch(`${API}/auth/google/register`, {
+  const url = `${API}/auth/google/register`;
+  const payload = { credential, role };
+  console.log("Google auth URL:", url);
+  console.log("Credential exists:", !!credential);
+
+  const res = await fetch(url, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ credential, role })
+    body: JSON.stringify(payload)
   });
+
+  const bodyText = await res.clone().text();
+  console.log("Google auth status:", res.status);
+  console.log("Google auth body:", bodyText);
+
   if (!res.ok) {
     const err = await res.json().catch(() => ({}));
     throw new Error(err.message || 'Google registration failed');
