@@ -188,13 +188,22 @@ async function apiMyEnrollments() {
   return res.json();
 }
 
-async function apiGetCourseProgress(courseId) {
-  const res = await fetch(`${API}/enrollments/progress/${courseId}`, {
-    method: 'GET',
-    headers: authHeaders()
-  });
-  if (!res.ok) throw new Error('Failed to load progress: ' + res.status);
-  return res.json();
+async function apiCourseProgress(courseId) {
+    const token = getToken(); // Returns 'lms_token' from localStorage
+
+    const response = await fetch(`${API}/enrollments/progress/${courseId}`, {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`
+        }
+    });
+
+    if (!response.ok) {
+        throw new Error(`Failed to load progress: ${response.status}`);
+    }
+
+    return await response.json();
 }
 
 async function apiCompleteLesson(courseId, lessonId) {

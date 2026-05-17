@@ -52,9 +52,9 @@ public class SecurityConfig {
                                 "/api/courses/**"
                         ).permitAll()
                         
-                        .requestMatchers("/api/enrollments/progress/**").authenticated()
-                        .requestMatchers("/api/progress/**").authenticated()
+                        .requestMatchers(HttpMethod.GET, "/api/enrollments/progress/**").authenticated()
                         .requestMatchers("/api/enrollments/**").authenticated()
+                        .requestMatchers("/api/progress/**").authenticated()
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
 
                         .anyRequest().authenticated()
