@@ -459,14 +459,6 @@ async function loadCourseAndProgress() {
     // 1. Load course details (includes lessons)
     const course = await apiGetCourseDetails(cid);
     
-    // 2. Check enrollment from same API as dashboard
-    const enrollments = await apiMyEnrollments();
-    const enrollment = enrollments.find(e => {
-        const enrolledCid = e.course?.id || e.courseId || e.id;
-        return Number(enrolledCid) === cid;
-    });
-    const isEnrolled = !!enrollment;
-
     const title = course.title;
     document.getElementById('course-hero-title').textContent = title;
     document.getElementById('breadcrumb-title').textContent  = title;
@@ -526,7 +518,7 @@ async function loadCourseAndProgress() {
     }
 
     const isEnrolled = !!enrollment;
-    const totalLessonsCount = course.totalLessons || _lessons.length || 0;
+    totalLessonsCount = course.totalLessons || _lessons.length || totalLessonsCount;
 
     if (isEnrolled) {
       console.log("User enrolled");
@@ -623,7 +615,13 @@ completeBtn.addEventListener('click', async () => {
 });
 
 function showCertModal() {
-  new bootstrap.Modal(document.getElementById('certModal')).show();
+  const modalEl = document.getElementById('certModal');
+  if (modalEl) {
+    const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
+    modal.show();
+  } else {
+    alert("Certificate feature coming soon.");
+  }
 }
 
 loadCourseAndProgress();
