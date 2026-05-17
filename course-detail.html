@@ -358,8 +358,6 @@
 <script>
 'use strict';
 
-requireAuth();
-
 const courseId = new URLSearchParams(window.location.search).get('id') || '1';
 let _lessons = [];
 let _active  = null;
@@ -499,55 +497,80 @@ async function loadCourseAndProgress() {
 
     renderPreviewVideo(course.previewVideoUrl);
 
+    // 1. Prepare baseline lessons from course metadata (publicly available)
+    _lessons = (course.lessons || []).map(l => ({
+        ...l,
+        unlocked: false,
+        completed: false
+    }));
+
+    // 2. Initial render of curriculum from metadata
+    if (_lessons.length > 0) {
+        renderLessons(_lessons);
+    } else {
+        lessonList.innerHTML = `<div class="alert alert-info border-0 small">Curriculum is being updated.</div>`;
+    }
+
+    // 3. Check enrollment and progress (requires authentication/token)
+    let enrollment = null;
+    if (getToken()) {
+        try {
+            const enrollments = await apiMyEnrollments();
+            enrollment = enrollments.find(e => {
+                const enrolledCid = e.course?.id || e.courseId || e.id;
+                return Number(enrolledCid) === cid;
+            });
+        } catch (e) {
+            console.warn("Enrollment check skipped (user likely not logged in)");
+        }
+    }
+
+    const isEnrolled = !!enrollment;
+    const totalLessonsCount = course.totalLessons || _lessons.length || 0;
+
     if (isEnrolled) {
-      // USER IS ENROLLED
       console.log("User enrolled");
       setupEnrollButtons(course.id, price, true);
 
       try {
-        // Fetch specific progress details (lessons, unlocked status, etc.)
-        const progressData = await apiGetCourseProgress(cid);
+        // Enrich lessons with completion/unlock status from progress API
+        const progressData = await apiCourseProgress(cid);
         _lessons = progressData.lessons || [];
         setProgress(progressData.completedLessons || 0, progressData.totalLessons || 0, progressData.progress || 0);
-        const next = _lessons.find(l => l.unlocked && !l.completed) || _lessons[0];
-        if (next) updatePlayer(next);
-        renderLessons(_lessons);
       } catch (e) {
-        console.warn("Detailed progress endpoint not available, falling back to summary.");
-        // Fallback to basic enrollment data from the list
-        setProgress(enrollment.completedLessons || 0, enrollment.totalLessons || 0, enrollment.progress || 0);
-        lessonList.innerHTML = `<div class="alert alert-info border-0 small">Curriculum details are currently unavailable.</div>`;
+        console.info("Detailed progress endpoint not available, showing baseline lessons.");
+        if (enrollment) {
+            setProgress(enrollment.completedLessons || 0, enrollment.totalLessons || 0, enrollment.progress || 0);
+        }
+        _lessons = _lessons.map(l => ({ ...l, unlocked: true }));
       }
+      
+      const next = _lessons.find(l => l.unlocked && !l.completed) || _lessons[0];
+      if (next) updatePlayer(next);
+      renderLessons(_lessons);
+
     } else {
-      // USER IS NOT ENROLLED
       console.log("User not enrolled yet");
       setupEnrollButtons(course.id, price, false);
       setProgress(0, totalLessonsCount, 0);
-
-      // Render all 9 lessons from CourseDTO, but mark them as locked
-      if (course.lessons && course.lessons.length > 0) {
-          const lockedLessons = course.lessons.map(l => ({ ...l, unlocked: false, completed: false }));
-          renderLessons(lockedLessons);
-          
-          // Show a floating enrollment prompt over the list
+      
+      if (_lessons.length > 0) {
           const lockOverlay = document.createElement('div');
           lockOverlay.className = "text-center py-3 bg-light rounded-3 mt-2 border";
           lockOverlay.innerHTML = `
             <p class="small text-muted mb-2"><i class="bi bi-lock-fill"></i> Curriculum is locked</p>
-            <button class="btn btn-primary btn-sm px-4" onclick="enrollFromDetail(${course.id}, '${course.title}')">Enroll to Unlock All Lessons</button>
+            <button class="btn btn-primary btn-sm px-4" onclick="enrollFromDetail(${course.id}, '${course.title.replace(/'/g, "\\'")}')">Enroll to Unlock All Lessons</button>
           `;
           lessonList.appendChild(lockOverlay);
-      } else {
-          lessonList.innerHTML = `<div class="alert alert-info border-0 small">Curriculum is being updated.</div>`;
       }
-      
+
       // Disable completion button
       completeBtn.disabled = true;
       completeBtn.textContent = 'Enroll to Start';
     }
 
   } catch (err) {
-    lessonList.innerHTML = `<div class="alert alert-warning">Could not load course. Is Spring Boot running?<br><small>${err.message}</small></div>`;
+    lessonList.innerHTML = `<div class="alert alert-warning">Could not load course details. Is the backend online?<br><small>${err.message}</small></div>`;
   }
 }
 
