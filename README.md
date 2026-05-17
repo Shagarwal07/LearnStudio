@@ -9,7 +9,7 @@ A production-ready LMS built with modern full-stack technologies.
 | Frontend | HTML5 + CSS3 + Bootstrap 5  |
 | Backend  | Java 17 + Spring Boot 3.2   |
 | Database | MySQL 8                     |
-| DevOps   | Docker + Jenkins            |
+| DevOps   | Docker                      |
 | Code     | GitHub                      |
 
 ## Project Structure
