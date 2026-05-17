@@ -55,7 +55,7 @@ public class AuthService {
 
     public AuthResponse loginWithGoogle(String credential) {
         try {
-            System.out.println("Google auth endpoint hit");
+            System.out.println("GOOGLE LOGIN SERVICE HIT");
             System.out.println("Google credential received: " + (credential != null));
 
             GoogleIdToken.Payload payload = verifyGoogleToken(credential);
@@ -76,7 +76,7 @@ public class AuthService {
 
     public AuthResponse registerWithGoogle(String credential, String role) {
         try {
-            System.out.println("Google auth endpoint hit");
+            System.out.println("GOOGLE REGISTER SERVICE HIT");
             System.out.println("Google credential received: " + (credential != null));
 
             GoogleIdToken.Payload payload = verifyGoogleToken(credential);
