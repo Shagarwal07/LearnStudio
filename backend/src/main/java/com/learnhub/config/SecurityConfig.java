@@ -48,9 +48,8 @@ public class SecurityConfig {
                         .requestMatchers("/", "/index.html", "/*.html").permitAll()
                         .requestMatchers("/css/**", "/js/**", "/images/**", "/videos/**", "/favicon.ico").permitAll()
                         
-                        .requestMatchers("/api/auth/**").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/auth/google").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/auth/google/register").permitAll()
+                        .requestMatchers("/api/auth/**", "/auth/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/auth/google/**", "/auth/google/**").permitAll()
                         .requestMatchers("/api/health").permitAll()
 
                         .requestMatchers(HttpMethod.GET, "/api/courses",

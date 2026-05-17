@@ -24,9 +24,10 @@ public class JwtFilter extends OncePerRequestFilter {
                                     FilterChain chain) throws ServletException, IOException {
 
         String path = request.getServletPath();
-        System.out.println("JWT FILTER PATH = " + path);
+        String uri = request.getRequestURI();
+        System.out.println("JWT FILTER DEBUG - Path: " + path + " | URI: " + uri);
 
-        if (path.startsWith("/api/auth")) {
+        if (path.contains("/auth/") || uri.contains("/auth/")) {
             System.out.println("JWT FILTER BYPASS FOR AUTH");
             chain.doFilter(request, response);
             return;
