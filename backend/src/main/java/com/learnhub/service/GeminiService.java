@@ -1,6 +1,7 @@
 package com.learnhub.service;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import java.util.List;
@@ -56,7 +57,7 @@ public class GeminiService {
 
         } catch (RuntimeException e) {
             return e.getMessage() != null && e.getMessage().contains("QUOTA_EXCEEDED")
-                ? "ERROR:QUOTA_EXCEEDED" : "ERROR:" + e.getMessage();
+                ? "{\"error\": \"QUOTA_EXCEEDED\", \"message\": \"AI quota reached. Please try later.\"}" : "ERROR:" + e.getMessage();
         } catch (Exception e) {
             return "ERROR:Gemini unavailable.";
         }
@@ -88,7 +89,7 @@ public class GeminiService {
 
         } catch (RuntimeException e) {
             return e.getMessage() != null && e.getMessage().contains("QUOTA_EXCEEDED")
-                ? "ERROR:QUOTA_EXCEEDED" : "ERROR:" + e.getMessage();
+                ? "{\"error\": \"QUOTA_EXCEEDED\", \"message\": \"AI quota reached. Please try later.\"}" : "ERROR:" + e.getMessage();
         } catch (Exception e) {
             return "ERROR:Grok unavailable.";
         }
@@ -96,18 +97,26 @@ public class GeminiService {
 
     // ── Helper Methods for AiController ───────────────────
     public String solveDoubt(String question, String courseName, String model) {
+        logRequest("Doubt Solver");
         String prompt = String.format("I am studying %s. Can you explain: %s", courseName, question);
         return ask(prompt, model);
     }
 
     public String recommendCourses(List<String> enrolledCourses, String model) {
+        logRequest("Course Recommender");
         String prompt = "Based on these courses I've taken: " + String.join(", ", enrolledCourses) + 
                         ". What should I learn next? Give me 3 suggestions.";
         return ask(prompt, model);
     }
 
     public String generateQuiz(String topic, String model) {
+        logRequest("Quiz Generator");
         String prompt = "Generate a 3-question multiple choice quiz about " + topic + " with answers at the end.";
         return ask(prompt, model);
+    }
+
+    private void logRequest(String endpoint) {
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        System.out.println("AI endpoint hit [" + endpoint + "] - User: " + email + " - Time: " + System.currentTimeMillis());
     }
 }

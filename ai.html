@@ -336,10 +336,19 @@
   }
 
   // ── Feature 1: Doubt Solver ───────────────────────────
+  let aiLoading = false;
+
   async function askDoubt() {
+    if (aiLoading) return;
+    aiLoading = true;
+
     const question = document.getElementById('doubtQuestion').value.trim();
     const course   = document.getElementById('doubtCourse').value.trim() || 'Programming';
-    if (!question) { alert('Please enter a question'); return; }
+    if (!question) { 
+      alert('Please enter a question'); 
+      aiLoading = false; 
+      return; 
+    }
 
     const btn = document.getElementById('doubtBtn');
     btn.disabled = true;
@@ -348,7 +357,17 @@
 
     try {
       const data = await apiAiSolveDoubt(question, course);
-      const answerText = data.answer || data;
+
+      if (data && data.error === 'QUOTA_EXCEEDED') {
+        document.getElementById('doubtAnswer').classList.remove('d-none');
+        document.getElementById('doubtAnswer').innerHTML = `
+          <div class="alert alert-warning small">
+            <i class="bi bi-exclamation-triangle me-2"></i>AI quota limit reached. Please try later.
+          </div>`;
+        return;
+      }
+
+      const answerText = data.answer || (typeof data === 'string' ? data : '');
       document.getElementById('doubtAnswer').classList.remove('d-none');
       document.getElementById('doubtAnswer').innerHTML = (typeof answerText === 'string' && answerText.startsWith('ERROR:'))
         ? `<div class="alert alert-warning small">${formatAiError(answerText)}</div>`
@@ -364,19 +383,18 @@
     } catch (e) {
       document.getElementById('doubtAnswer').innerHTML =
         `<div class="alert alert-danger small">Failed to get answer. Is the backend running?</div>`;
+    } finally {
+      btn.disabled = false;
+      btn.innerHTML = '<i class="bi bi-send-fill"></i> Ask';
+      setTimeout(() => { aiLoading = false; }, 3000);
     }
-    btn.disabled = false;
-    btn.innerHTML = '<i class="bi bi-send-fill"></i> Ask';
-  }
-
-  function quickAsk(q, c) {
-    document.getElementById('doubtQuestion').value = q;
-    document.getElementById('doubtCourse').value   = c;
-    askDoubt();
   }
 
   // ── Feature 2: Recommender ────────────────────────────
   async function getRecommendations() {
+    if (aiLoading) return;
+    aiLoading = true;
+
     const btn = document.getElementById('recBtn');
     btn.disabled = true;
     btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Thinking...';
@@ -387,6 +405,20 @@
       const enrollments = await apiMyEnrollments();
       const courseNames = enrollments.map(e => e.courseTitle);
       const data = await apiAiRecommend(courseNames);
+
+      if (data && data.error === 'QUOTA_EXCEEDED') {
+        document.getElementById('recAnswer').classList.remove('d-none');
+        document.getElementById('recAnswer').innerHTML = `
+          <div class="alert alert-warning small mb-2">
+            <i class="bi bi-exclamation-triangle me-2"></i>AI quota reached. Please try later.
+          </div>
+          <div class="chat-bubble">🌟 Demo Recommendations:
+1. Full-Stack Web Development (MERN)
+2. Modern DevOps with Docker & Kubernetes
+3. Data Science & Machine Learning with Python</div>`;
+        return;
+      }
+
       const recsText = data.recommendations ? data.recommendations.join('\n') : (data.answer || data);
 
       document.getElementById('recAnswer').classList.remove('d-none');
@@ -406,17 +438,23 @@
     } catch (e) {
       document.getElementById('recAnswer').innerHTML =
         `<div class="alert alert-danger small">Failed to get recommendations.</div>`;
+    } finally {
+      btn.disabled = false;
+      btn.innerHTML = '<i class="bi bi-stars me-2"></i>Get My Recommendations';
+      setTimeout(() => { aiLoading = false; }, 3000);
     }
-    btn.disabled = false;
-    btn.innerHTML = '<i class="bi bi-stars me-2"></i>Get My Recommendations';
   }
 
-  // ── Feature 3: Interactive Live Quiz ─────────────────────
-  let quizQuestions = [], quizIndex = 0, quizScore = 0, quizTopic = '';
-
   async function generateQuiz() {
+    if (aiLoading) return;
+    aiLoading = true;
+
     const topic = document.getElementById('quizTopic').value.trim();
-    if (!topic) { alert('Please enter a topic'); return; }
+    if (!topic) { 
+      alert('Please enter a topic'); 
+      aiLoading = false; 
+      return; 
+    }
     quizTopic = topic;
 
     const btn = document.getElementById('quizBtn');
@@ -434,6 +472,31 @@
       }
 
       const data = typeof raw === 'string' ? parseAiJson(raw) : raw;
+
+      if (data && data.error === 'QUOTA_EXCEEDED') {
+          document.getElementById('quizError').classList.remove('d-none');
+          document.getElementById('quizError').innerHTML = `
+            <div class="alert alert-warning small mb-3">
+              <i class="bi bi-exclamation-triangle me-2"></i>AI quota reached. Please try later.
+            </div>`;
+          
+          quizQuestions = [
+            {
+              question: `Common concepts in ${topic}?`,
+              options: { A: "Syntax and Semantics", B: "Coffee and Tea", C: "Sun and Moon", D: "Hard work and Luck" },
+              answer: "A"
+            },
+            {
+              question: `Best way to master ${topic}?`,
+              options: { A: "Sleeping", B: "Consistent Practice", C: "Watching Movies", D: "Gaming" },
+              answer: "B"
+            }
+          ];
+          quizIndex = 0; quizScore = 0;
+          setTimeout(showQuestion, 1500);
+          return;
+      }
+
       const questions = data.questions || data.quiz || data;
       quizQuestions = Array.isArray(questions) ? questions : [];
 
@@ -444,9 +507,11 @@
     } catch (e) {
       document.getElementById('quizError').classList.remove('d-none');
       document.getElementById('quizError').innerHTML = `<div class="alert alert-danger small">Failed to parse quiz. Try again.</div>`;
+    } finally {
+      btn.disabled = false;
+      btn.innerHTML = '<i class="bi bi-lightning-fill me-1"></i> Start Quiz';
+      setTimeout(() => aiLoadingQuiz = false, 3000);
     }
-    btn.disabled = false;
-    btn.innerHTML = '<i class="bi bi-lightning-fill me-1"></i> Start Quiz';
   }
 
   function showQuestion() {
